@@ -1,4 +1,14 @@
-This is your new Play application
-=================================
+151Challenge
+============
 
-This file will be packaged with your application, when using `activator dist`.
+The 151 Challenge Website
+
+This will eventually have the code for a 151 Challenge tracker website.
+Our shoulders will be strong and our livers prepared.
+
+
+For developers:
+This is built in the Scala Play framework. I've found Intellij 14 to have great support for it with the Scala plugin.
+
+Simple development cycle is to use "activator run" to run a test webserver at http://localhost:9000. Once this is running,
+you can simply edit any of the scala.html or scala files and changes will be reflected in your browser on refresh.
