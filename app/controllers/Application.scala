@@ -1,6 +1,8 @@
 package controllers
 
+import models.Users
 import play.api._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 object Application extends Controller {
@@ -22,6 +24,9 @@ object Application extends Controller {
   }
 
   def login() = Action {
-    NotFound(views.html.loginPage())
+    Users.createTable()
+    Users.addFakeUser()
+    val usersList = Users.getUsers
+    Ok(views.html.loginPage() + usersList.toString())
   }
 }
