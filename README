@@ -12,3 +12,5 @@ This is built in the Scala Play framework. I've found Intellij 14 to have great 
 
 Simple development cycle is to use "activator run" to run a test webserver at http://localhost:9000. Once this is running,
 you can simply edit any of the scala.html or scala files and changes will be reflected in your browser on refresh.
+
+We've got a GitHub issue open to track feature ideas: https://github.com/fkearney8/151Challenge/issues
