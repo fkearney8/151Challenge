@@ -28,7 +28,6 @@ object Users {
     }
   }
 
-
   def addUser(username: String, password: String) {
     val users = TableQuery[Users]
     db.withSession { implicit session =>

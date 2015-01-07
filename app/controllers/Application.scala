@@ -24,8 +24,6 @@ object Application extends Controller {
   }
 
   def login() = Action {
-    Users.createTable()
-    Users.addFakeUser()
     val usersList = Users.getUsers
     Ok(views.html.loginPage() + usersList.toString())
   }
