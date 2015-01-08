@@ -14,3 +14,60 @@ Simple development cycle is to use "activator run" to run a test webserver at ht
 you can simply edit any of the scala.html or scala files and changes will be reflected in your browser on refresh.
 
 We've got a GitHub issue open to track feature ideas: https://github.com/fkearney8/151Challenge/issues
+
+Database:
+=========
+
+The website uses a postgres database by default.  You will need to install and setup a postgres database for the application.
+
+Assuming that you are using a linux or linux-like environment and have installed postgres through a standard binary package, you will need to setup the user for the application and a database.
+
+If you want to use the default configuration in the application you should have a database called bacardi that is owned by the user bacardi and has the password batman.  You also want your postgres server running on the default 5432).  
+
+It isn't a good idea to put passwords directly in github, but we are assuming that you will be running the database server to only accept connections on the localhost during development.
+
+On my Debian install I had to edit the postgresql conf file to listen only on localhost and I had to change the port from 5433 to 5432.
+
+I edited this file:
+
+  /etc/postgresql/9.1/main/postgresql.conf'
+
+At set these configuration values:
+
+  listen_addresses = 'localhost'
+  port = 5432
+
+In order to setup the database and user, you can connect to the template1 database to create the role and application database.
+
+Example:
+
+
+bcastill@alonzo:~$ su -c 'psql -U postgres template1' postgres
+Password: 
+psql (9.1.14)
+Type "help" for help.
+
+template1=# create role bacardi with login password 'batman';
+CREATE ROLE
+template1=# create database bacardi with owner = 'bacardi';
+ERROR:  syntax error at or near "'bacardi'"
+LINE 1: create database bacardi with owner = 'bacardi';
+                                             ^
+template1=# create database bacardi with owner = bacardi;
+CREATE DATABASE
+template1=# \1
+Invalid command \1. Try \? for help.
+template1=# \q
+
+Test a remote connection:
+
+You can test connecting with the application user over tcp using the following command.
+
+
+bcastill@alonzo:~/projects/151Challenge$ psql -h localhost -p 5432 -U bacardi -W
+Password for user bacardi: 
+psql (9.1.14)
+SSL connection (cipher: DHE-RSA-AES256-SHA, bits: 256)
+Type "help" for help.
+
+bacardi=> 

@@ -1,9 +1,10 @@
 package models
 
-import org.h2.jdbc.JdbcSQLException
+import play.api.Logger
 
-import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
+import java.sql.SQLException
 
 class Users(tag: Tag) extends Table[(String, String)](tag, "USERS") {
 
@@ -17,13 +18,13 @@ object Users {
 
   //TODO this has to happen on startup if the table doesn't exist.
   def createTable(): Unit = {
-
+    
     val users = TableQuery[Users]
     db.withSession { implicit session =>
       try {
         users.ddl.create
       } catch {
-        case jdbce: JdbcSQLException => System.out.println("Swallowed table already exists exception")
+        case sqle: SQLException => System.out.println("Swallowed table already exists exception")
       }
     }
   }
