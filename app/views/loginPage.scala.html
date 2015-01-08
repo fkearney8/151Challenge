@@ -1,2 +1,15 @@
-Login page not ready.
+@(usersList: List[(String, String)])
+
+
+Login page not ready.<br/>
+Users in database:<br/>
+
+<li>
+    @for(user <- usersList) {
+        <li>@user._1</li>
+    }
+</li>
+
+<a href="/authTest">Check in AuthTest</a>
+
 
