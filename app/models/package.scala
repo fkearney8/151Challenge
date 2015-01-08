@@ -1,7 +1,13 @@
 package object models {
 
-  import scala.slick.driver.H2Driver.simple._
+  import scala.slick.driver.PostgresDriver.simple._
+  import play.api.db.DB
+  import play.api.Logger
+  import play.api.Play.current
 
-  lazy val db = Database.forURL("jdbc:h2:mem:play;MODE=PostgreSQL", driver = "org.h2.Driver")
+  lazy val db = {
+    Logger.debug(s"Configuring slick database: $DB")
+    Database.forDataSource(DB.getDataSource())
+  }
 
 }
