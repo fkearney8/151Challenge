@@ -6,48 +6,46 @@ import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
 import java.sql.SQLException
 
-class Users(tag: Tag) extends Table[(String, String)](tag, "USERS") {
+case class User(id: Int, email: String, username: String, password: String, admin: Int = 0) {
+  def this(row: Users.RowType) = this(row._1, row._2, row._3, row._4, row._5)
+  def toRow: Users.RowType = (id, email, username, password, admin)
+}
 
-  def username = column[String]("USERNAME")
-  def password = column[String]("PASSWORD")
-
-  def * : ProvenShape[(String, String)] = (username, password)
+class Users(tag: Tag) extends Table[Users.RowType](tag, "USERS") {
+  def id       = column[Int]("id", O.AutoInc, O.PrimaryKey)
+  def email    = column[String]("email")
+  def username = column[String]("username")
+  def password = column[String]("password")
+  def admin    = column[Int]("admin")
+  def * : ProvenShape[Users.RowType] = (id, email, username, password, admin)
 }
 
 object Users {
 
-  //TODO this has to happen on startup if the table doesn't exist.
-  def createTable(): Unit = {
-    
-    val users = TableQuery[Users]
+  type RowType = (Int, String, String, String, Int)
+
+  val users = TableQuery[Users]
+
+  def add(user: User) {
     db.withSession { implicit session =>
-      try {
-        users.ddl.create
-      } catch {
-        case sqle: SQLException => System.out.println("Swallowed table already exists exception")
-      }
+      users += user.toRow
     }
   }
 
-  def addUser(username: String, password: String) {
-    val users = TableQuery[Users]
+  def findByEmailOrUsername(email: String, username: String): Option[User] = {
     db.withSession { implicit session =>
-      users += (username, password)
+      users
+        .filter { user => user.email === email || user.username === username }
+        .take(1)
+        .list
+        .headOption
+        .map { row => new User(row) }
     }
   }
 
-  def addFakeUser() {
-    addUser("FrankTest", System.currentTimeMillis().toString)
-  }
-
-  def getUsers: List[(String, String)] = {
-    val users = TableQuery[Users]
+  def findAll: List[User] = {
     db.withSession { implicit session =>
-      users.list
+      users.list.map { row => new User(row) }
     }
   }
 }
-
-
-
-
