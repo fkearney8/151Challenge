@@ -1,4 +1,4 @@
-@(usersList: List[(String, String)])
+@(usersList: List[User])
 
 
 Login page not ready.<br/>
@@ -6,7 +6,7 @@ Users in database:<br/>
 
 <li>
     @for(user <- usersList) {
-        <li>@user._1</li>
+        <li>@user.username</li>
     }
 </li>
 

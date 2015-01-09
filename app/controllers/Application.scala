@@ -22,7 +22,6 @@ object Application extends Controller {
   }
 
   def recordExercise= Action {
-
     Ok(views.html.recordExercise())
   }
 
@@ -37,8 +36,7 @@ object Application extends Controller {
   }
 
   def login() = Action { implicit request =>
-    val usersList = Users.getUsers
-    Ok(views.html.loginPage(usersList))
+    Ok(views.html.loginPage(Users.findAll))
   }
 
   def logout() = Action { implicit request =>
