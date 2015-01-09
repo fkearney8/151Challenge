@@ -1,7 +1,7 @@
 
 package controllers
 
-import models.Users
+import models.{Login, Users}
 import play.api._
 import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
@@ -16,27 +16,35 @@ object Application extends Controller {
     request.session.get(USERNAME_SESSION_KEY)
   }
 
-  def index = Action {
-    implicit val user = Option("hi")
-    Ok(views.html.index())
+  def index = Action { implicit request =>
+    Ok{views.html.index()}
   }
 
-  def recordExercise= Action {
+  def recordExercise = Action { implicit request =>
     Ok(views.html.recordExercise())
   }
 
-  def displayEntries = Action {
+  def displayEntries = Action { implicit request =>
     Ok(views.html.displayEntries())
   }
 
-  def viewProgress = Action { request =>
+  def viewProgress = Action { implicit request =>
     Ok(views.html.viewProgress())
-        //TODO cheating for now and just logging in as 'Theresa' when someone goes to the view progress page
-        .withSession(request.session + (USERNAME_SESSION_KEY, "Theresa"))
   }
 
   def login() = Action { implicit request =>
-    Ok(views.html.loginPage(Users.findAll))
+    Ok(views.html.loginPage(Login.loginForm)(Users.findAll))
+  }
+
+  def loginAction() = Action { implicit request =>
+    val loginInfo = Login.loginForm.bindFromRequest().get
+    loginInfo match {
+      case (username, password) =>
+        //TODO Actually authenticate, hash password and check against database
+        Ok("Got login for " + username + " with password " + password)
+            .withSession(request.session + (USERNAME_SESSION_KEY, username))
+      case _ => BadRequest("Something went wrong, no login info posted")
+    }
   }
 
   def logout() = Action { implicit request =>
@@ -56,8 +64,8 @@ object Application extends Controller {
     Ok("This page required Auth, Hello " + username)
   }
 
-  def showAuthPage = Action { request =>
-    Ok(views.html.titlebar(getAuthenticatedUser(request)))
+  def showAuthPage = Action { implicit request =>
+    Ok(views.html.titleBar())
   }
 
 

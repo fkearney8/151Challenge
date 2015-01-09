@@ -1,15 +1,20 @@
-@(usersList: List[User])
+@(loginForm: Form[(String, String)])(usersList: List[User])
 
 
-Login page not ready.<br/>
+@helper.form(action = routes.Application.loginAction()) {
+    @helper.inputText(loginForm(Login.USERNAME_FIELD))
+    @helper.inputPassword(loginForm(Login.PASSWORD_FIELD))
+    <input type="submit"/>
+}
+
+
 Users in database:<br/>
 
 <li>
-    @for(user <- usersList) {
-        <li>@user.username</li>
+    @{
+        for(user <- usersList) {
+            <li>@user.username</li>
+        }
     }
 </li>
-
-<a href="/authTest">Check in AuthTest</a>
-
 

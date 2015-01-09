@@ -37,27 +37,23 @@ At set these configuration values:
   listen_addresses = 'localhost'
   port = 5432
 
-In order to setup the database and user, you can connect to the template1 database to create the role and application database.
+In order to setup the database and user, you can connect to psql and create the role and application database.
 
 Example:
 
 
 bcastill@alonzo:~$ su -c 'psql -U postgres template1' postgres
+#If you don't have a Liunx password for the postgres user, you can use "sudo -u postgres psql"
 Password: 
 psql (9.1.14)
 Type "help" for help.
 
 template1=# create role bacardi with login password 'batman';
 CREATE ROLE
-template1=# create database bacardi with owner = 'bacardi';
-ERROR:  syntax error at or near "'bacardi'"
-LINE 1: create database bacardi with owner = 'bacardi';
-                                             ^
 template1=# create database bacardi with owner = bacardi;
 CREATE DATABASE
-template1=# \1
-Invalid command \1. Try \? for help.
-template1=# \q
+template1=#
+
 
 Test a remote connection:
 
