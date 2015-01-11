@@ -1,7 +1,9 @@
 
 package controllers
 
-import models.{ExerciseEntries, ExerciseEntry, Login, Users}
+import controllers.handlers.AddExerciseHandler
+import forms.{LoginForm, ExerciseEntriesForm}
+import models.Users
 import play.api.data.{Form, FormError}
 import play.api.mvc._
 import utils.authentication.{AuthenticationResult, UserAuthenticator}
@@ -13,7 +15,7 @@ object Application extends Controller {
   }
 
   def recordExercise = isAuthenticated { username => implicit request =>
-    Ok(views.html.recordExercise(ExerciseEntries.exerciseEntryForm))
+    Ok(views.html.recordExercise(ExerciseEntriesForm.exerciseEntryForm))
   }
 
   def displayEntries = isAuthenticated { username => implicit request =>
@@ -25,11 +27,11 @@ object Application extends Controller {
   }
 
   def login() = Action { implicit request =>
-    Ok(views.html.loginPage(Login.loginForm)(Users.findAll))
+    Ok(views.html.loginPage(LoginForm.loginForm)(Users.findAll))
   }
 
   def loginAction() = Action { implicit request =>
-    val loginInfo = Login.loginForm.bindFromRequest().get
+    val loginInfo = LoginForm.loginForm.bindFromRequest().get
     loginInfo match {
       case (username, password) =>
         val authResult = UserAuthenticator.authenticateUser(username, password)
@@ -47,19 +49,7 @@ object Application extends Controller {
   }
 
   def addExerciseEntry() = isAuthenticated { username => implicit request =>
-    val formInfo: Form[ExerciseEntry] = ExerciseEntries.exerciseEntryForm.bindFromRequest()
-    if (formInfo.errors.nonEmpty) {
-      BadRequest {
-        val formErrorString = formInfo.errors.foldLeft("")((aggregateString: String, eachError: FormError) => {
-          aggregateString + " " + eachError.message
-        })
-        "There were problems with your submission: " + formErrorString
-      }
-    } else {
-      val formData = formInfo.get
-      val errorString = ExerciseEntries.validateEntry(formData)
-      errorString.fold(Ok("Exercise has been Recorded"))(BadRequest(_))
-    }
+    AddExerciseHandler.addExerciseEntry
   }
 
   def logout() = Action { implicit request =>

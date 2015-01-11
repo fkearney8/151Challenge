@@ -1,9 +1,9 @@
-package models
+package forms
 
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
 
-object Login {
+object LoginForm {
 
   val USERNAME_FIELD = "username"
   val PASSWORD_FIELD = "password"

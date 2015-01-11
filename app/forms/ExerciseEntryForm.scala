@@ -1,14 +1,14 @@
-package models
+package forms
 
 import java.util.{Calendar, Date}
 
-import play.api.data._
+import models.{ExerciseType, ExerciseEntry}
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.FormError
+import play.api.data.{FormError, _}
 
 
-object ExerciseEntries {
+object ExerciseEntriesForm {
   val exerciseEntryForm = Form(
     mapping(
       "exerciseType" -> ExerciseCustomMappings.exerciseEntryMapping,
@@ -77,9 +77,3 @@ object ExerciseCustomMappings {
   def doubleMapping: Mapping[Double] = Forms.of[Double](play.api.data.format.Formats.doubleFormat)
 }
 
-case class ExerciseEntry(exerciseType: ExerciseType.Value, reps: Double, when: Date, comment: String) {
-}
-
-object ExerciseType extends Enumeration {
-  val SitUps, Lunges, Burpees, Miles, Shot = Value
-}

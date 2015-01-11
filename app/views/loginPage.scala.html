@@ -1,9 +1,9 @@
 @(loginForm: Form[(String, String)])(usersList: List[User])
-
+@import forms.LoginForm
 
 @helper.form(action = routes.Application.loginAction()) {
-    @helper.inputText(loginForm(Login.USERNAME_FIELD))
-    @helper.inputPassword(loginForm(Login.PASSWORD_FIELD))
+    @helper.inputText(loginForm(LoginForm.USERNAME_FIELD))
+    @helper.inputPassword(loginForm(LoginForm.PASSWORD_FIELD))
     <input type="submit"/>
 }
 
