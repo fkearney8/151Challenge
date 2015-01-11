@@ -8,6 +8,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
 import play.twirl.api.HtmlFormat
+import utils.authentication.{AuthenticationResult, UserAuthenticator}
 
 object Application extends Controller {
 
@@ -41,9 +42,16 @@ object Application extends Controller {
     val loginInfo = Login.loginForm.bindFromRequest().get
     loginInfo match {
       case (username, password) =>
-        //TODO Actually authenticate, hash password and check against database
-        Ok("Got login for " + username + " with password " + password)
-            .withSession(request.session + (USERNAME_SESSION_KEY, username))
+        val authResult = UserAuthenticator.authenticateUser(username, password)
+        authResult match {
+          case AuthenticationResult(true, true) =>
+            Ok("Got login for " + username + " with password " + password)
+                .withSession(request.session + (USERNAME_SESSION_KEY, username))
+          case AuthenticationResult(false, _) =>
+            Ok("User " + username + " does not exist.")
+          case AuthenticationResult(_, false) =>
+            Ok("Password is not correct")
+        }
       case _ => BadRequest("Something went wrong, no login info posted")
     }
   }
