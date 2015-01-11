@@ -1,5 +1,17 @@
-@()(implicit request: RequestHeader)
+@(exerciseEntryForm: Form[ExerciseEntry])(implicit request: RequestHeader)
 @main("Record Progress") {
     This is the page to record stuff
     Exercise Reps Date
+
+    @helper.form(action = routes.Application.addExerciseEntry()) {
+        @helper.select(exerciseEntryForm("exerciseType"),
+            ExerciseType.values.map{
+                exType => (exType.toString, exType.toString)
+            }.toSeq
+        )
+        @helper.inputText(exerciseEntryForm("reps"))
+        @helper.inputDate(exerciseEntryForm("when"))
+        @helper.inputText(exerciseEntryForm("comment"))
+        <input type="submit"/>
+    }
 }

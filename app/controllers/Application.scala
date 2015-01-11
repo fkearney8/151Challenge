@@ -1,8 +1,9 @@
 
 package controllers
 
-import models.{Login, Users}
+import models.{ExerciseEntry, ExerciseEntries, Login, Users}
 import play.api._
+import play.api.data.{FormError, Form}
 import play.api.libs.json.Json
 import play.api.mvc.Security.AuthenticatedBuilder
 import play.api.mvc._
@@ -21,7 +22,7 @@ object Application extends Controller {
   }
 
   def recordExercise = Action { implicit request =>
-    Ok(views.html.recordExercise())
+    Ok(views.html.recordExercise(ExerciseEntries.exerciseEntryForm))
   }
 
   def displayEntries = Action { implicit request =>
@@ -44,6 +45,22 @@ object Application extends Controller {
         Ok("Got login for " + username + " with password " + password)
             .withSession(request.session + (USERNAME_SESSION_KEY, username))
       case _ => BadRequest("Something went wrong, no login info posted")
+    }
+  }
+
+  def addExerciseEntry() = Action { implicit request =>
+    val formInfo: Form[ExerciseEntry] = ExerciseEntries.exerciseEntryForm.bindFromRequest()
+    if (formInfo.errors.nonEmpty) {
+      BadRequest {
+        val formErrorString = formInfo.errors.foldLeft("")((aggregateString: String, eachError: FormError) => {
+          aggregateString + " " + eachError.message
+        })
+        "There were problems with your submission: " + formErrorString
+      }
+    } else {
+      val formData = formInfo.get
+      val errorString = ExerciseEntries.validateEntry(formData)
+      errorString.fold(Ok("Exercise has been Recorded"))(BadRequest(_))
     }
   }
 
