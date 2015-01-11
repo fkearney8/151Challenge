@@ -5,7 +5,7 @@
     &nbsp;
 
     @*This is always none right now, since none of the calling templates pass it in (except for AuthTest)*@
-    @defining(UserAuthenticator.getAuthenticatedUser(request)) { authUser =>
+    @defining(UserAuthenticator.getAuthenticatedUsername(request)) { authUser =>
         @authUser match {
             case Some(user) => {
                 <span style="float : left">Hi @user</span>

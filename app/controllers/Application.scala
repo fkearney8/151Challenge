@@ -59,7 +59,7 @@ object Application extends Controller {
   private val LOGIN_REFERRER: String = "loginReferrer"
 
   def isAuthenticated(f: => String => Request[AnyContent] => Result): EssentialAction = {
-    def userInfo(rh: RequestHeader): Option[String] = { UserAuthenticator.getAuthenticatedUser(rh) }
+    def userInfo(rh: RequestHeader): Option[String] = { UserAuthenticator.getAuthenticatedUsername(rh) }
 
     def onUnauthorized(rh: RequestHeader): Result = {
       Redirect("/login").withSession(rh.session + (LOGIN_REFERRER, rh.uri))

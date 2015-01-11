@@ -1,0 +1,15 @@
+# --- !Ups
+
+DROP TABLE IF EXISTS "EXERCISE_ENTRIES" CASCADE;
+
+CREATE TABLE "EXERCISE_ENTRIES" (
+    id SERIAL NOT NULL PRIMARY KEY,
+    exerciseType varchar(64) NOT NULL,
+    dateDone DATE NOT NULL,
+    userId INTEGER NOT NULL,
+    comment TEXT,
+    FOREIGN KEY (userId) REFERENCES "USERS" (id)
+);
+
+# --- !Downs
+DROP TABLE "EXERCISE_ENTRIES";

@@ -1,6 +1,6 @@
 package utils.authentication
 
-import models.Users
+import models.{User, Users}
 import play.api.libs.Crypto
 import play.api.mvc.RequestHeader
 
@@ -21,8 +21,16 @@ object UserAuthenticator {
     }
   }
 
-  def getAuthenticatedUser(request: RequestHeader): Option[String] = {
+  def getAuthenticatedUsername(request: RequestHeader): Option[String] = {
     request.session.get(USERNAME_SESSION_KEY)
+  }
+
+  def getAuthenticatedUser(request: RequestHeader): Option[User] = {
+    val username = getAuthenticatedUsername(request)
+    val user: Option[User] = username.map{ usernameString =>
+      Users.findByEmailOrUsername("", usernameString).get
+    }
+    user
   }
 }
 

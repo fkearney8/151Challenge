@@ -1,14 +1,15 @@
 package controllers.handlers
 
 import controllers.Application._
-import forms.ExerciseEntriesForm
-import models.ExerciseEntry
-import play.api.data.{FormError, Form}
-import play.api.mvc.{Request, AnyContent, Result}
+import forms.{ExerciseEntriesForm, ExerciseEntryFormInput}
+import models.{ExerciseEntries, ExerciseEntry}
+import play.api.data.{Form, FormError}
+import play.api.mvc.{AnyContent, Request, Result}
+import utils.authentication.UserAuthenticator
 
 object AddExerciseHandler {
   def addExerciseEntry(implicit request: Request[AnyContent]): Result = {
-    val formInfo: Form[ExerciseEntry] = ExerciseEntriesForm.exerciseEntryForm.bindFromRequest()
+    val formInfo: Form[ExerciseEntryFormInput] = ExerciseEntriesForm.exerciseEntryForm.bindFromRequest()
     if (formInfo.errors.nonEmpty) {
       BadRequest {
         val formErrorString = formInfo.errors.foldLeft("")((aggregateString: String, eachError: FormError) => {
@@ -18,13 +19,18 @@ object AddExerciseHandler {
       }
     } else {
       val formData = formInfo.get
-      val errorString = ExerciseEntriesForm.validateEntry(formData)
-      errorString.fold(addValidatedExerciseEntry(formData))(BadRequest(_))
-      Ok("Added exercise")
+      UserAuthenticator.getAuthenticatedUser(request).fold(BadRequest("No authenticated user when adding exercise")){
+        authUser => {
+          //ID is 0 here because it does not have an affect on insertion
+          val exerciseEntry = ExerciseEntry(0, formData.exerciseType, formData.reps, formData.when, formData.comment, authUser.id)
+          val errorString = ExerciseEntriesForm.validateEntry(exerciseEntry)
+          errorString.fold {
+            ExerciseEntries.add(exerciseEntry)
+            Ok("Added exercise")
+          }(BadRequest(_))
+        }
+      }
     }
   }
 
-  private def addValidatedExerciseEntry(entry: ExerciseEntry) {
-
-  }
 }

@@ -8,6 +8,8 @@ import play.api.data.format.Formatter
 import play.api.data.{FormError, _}
 
 
+case class ExerciseEntryFormInput(exerciseType: ExerciseType.Value, reps:Double, when: Date, comment: String)
+
 object ExerciseEntriesForm {
   val exerciseEntryForm = Form(
     mapping(
@@ -15,13 +17,13 @@ object ExerciseEntriesForm {
       "reps" -> ExerciseCustomMappings.doubleMapping, //Since miles "reps" may be doubles
       "when" -> date,
       "comment" -> text
-    )(ExerciseEntry.apply)(ExerciseEntry.unapply)
+    )(ExerciseEntryFormInput.apply)(ExerciseEntryFormInput.unapply)
   )
 
   def validateEntry(entry: ExerciseEntry): Option[String] = {
     val repsValidationString = entry match {
-      case ExerciseEntry(ExerciseType.Miles, _, _, _) => None
-      case ExerciseEntry(_, reps, _, _) =>
+      case ExerciseEntry(_, ExerciseType.Miles, _, _, _, _) => None
+      case ExerciseEntry(_, _, reps, _, _, _) =>
         if (!reps.isValidInt) Some("Cannot have fractions unless you are entering miles.")
         else None
     }
@@ -48,9 +50,9 @@ object ExerciseEntriesForm {
   }
 }
 
-//Note to Other devs - for some reason, you must put any customer formatter in some other class or object than where the form is defined.
+//Note to Other devs - for some reason, you must put any custom formatter in some other class or object than where the form is defined.
 // If you don't, the Formatter will be null when the Mapping is instantiated, even if passed explicitly.
-// I have no idea why this is broken, but finally happened to try this after 3 hours with no other changes and it suddenly works.
+// I have no idea why that would not work, but finally happened to try this after 3 hours and it suddenly works.
 object ExerciseCustomMappings {
   implicit val exerciseTypeFormatter = new Formatter[ExerciseType.Value] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ExerciseType.Value] = {
