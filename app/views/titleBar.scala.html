@@ -1,10 +1,11 @@
 @()(implicit request: RequestHeader)
+@import utils.authentication.UserAuthenticator
 
 <div style="border-bottom: thin solid #000000">
     &nbsp;
 
     @*This is always none right now, since none of the calling templates pass it in (except for AuthTest)*@
-    @defining(Application.getAuthenticatedUser(request)) { authUser =>
+    @defining(UserAuthenticator.getAuthenticatedUser(request)) { authUser =>
         @authUser match {
             case Some(user) => {
                 <span style="float : left">Hi @user</span>

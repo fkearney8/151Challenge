@@ -1,36 +1,26 @@
 
 package controllers
 
-import models.{ExerciseEntry, ExerciseEntries, Login, Users}
-import play.api._
-import play.api.data.{FormError, Form}
-import play.api.libs.json.Json
-import play.api.mvc.Security.AuthenticatedBuilder
+import models.{ExerciseEntries, ExerciseEntry, Login, Users}
+import play.api.data.{Form, FormError}
 import play.api.mvc._
-import play.twirl.api.HtmlFormat
 import utils.authentication.{AuthenticationResult, UserAuthenticator}
 
 object Application extends Controller {
-
-  private val USERNAME_SESSION_KEY: String = "username"
-
-  def getAuthenticatedUser(request: RequestHeader): Option[String] = {
-    request.session.get(USERNAME_SESSION_KEY)
-  }
 
   def index = Action { implicit request =>
     Ok{views.html.index()}
   }
 
-  def recordExercise = Action { implicit request =>
+  def recordExercise = isAuthenticated { username => implicit request =>
     Ok(views.html.recordExercise(ExerciseEntries.exerciseEntryForm))
   }
 
-  def displayEntries = Action { implicit request =>
+  def displayEntries = isAuthenticated { username => implicit request =>
     Ok(views.html.displayEntries())
   }
 
-  def viewProgress = Action { implicit request =>
+  def viewProgress = isAuthenticated { username => implicit request =>
     Ok(views.html.viewProgress())
   }
 
@@ -45,8 +35,8 @@ object Application extends Controller {
         val authResult = UserAuthenticator.authenticateUser(username, password)
         authResult match {
           case AuthenticationResult(true, true) =>
-            Ok("Got login for " + username + " with password " + password)
-                .withSession(request.session + (USERNAME_SESSION_KEY, username))
+            val redirect = request.session.get(LOGIN_REFERRER).getOrElse("/")
+            Redirect(redirect).withSession(request.session - LOGIN_REFERRER + (UserAuthenticator.USERNAME_SESSION_KEY, username))
           case AuthenticationResult(false, _) =>
             Ok("User " + username + " does not exist.")
           case AuthenticationResult(_, false) =>
@@ -56,7 +46,7 @@ object Application extends Controller {
     }
   }
 
-  def addExerciseEntry() = Action { implicit request =>
+  def addExerciseEntry() = isAuthenticated { username => implicit request =>
     val formInfo: Form[ExerciseEntry] = ExerciseEntries.exerciseEntryForm.bindFromRequest()
     if (formInfo.errors.nonEmpty) {
       BadRequest {
@@ -76,22 +66,18 @@ object Application extends Controller {
     Redirect("/login").withNewSession
   }
 
+  private val LOGIN_REFERRER: String = "loginReferrer"
+
   def isAuthenticated(f: => String => Request[AnyContent] => Result): EssentialAction = {
-    def userInfo(rh: RequestHeader): Option[String] = { rh.session.get(USERNAME_SESSION_KEY) }
-    def onUnauthorized(rh: RequestHeader): Result = { Redirect("/login") }
+    def userInfo(rh: RequestHeader): Option[String] = { UserAuthenticator.getAuthenticatedUser(rh) }
+
+    def onUnauthorized(rh: RequestHeader): Result = {
+      Redirect("/login").withSession(rh.session + (LOGIN_REFERRER, rh.uri))
+    }
+
     Security.Authenticated(userInfo, onUnauthorized) { user =>
       Action(request => f(user)(request))
     }
   }
-
-  //then in a controller
-  def authRequiredTestPage: EssentialAction = isAuthenticated { username => request =>
-    Ok("This page required Auth, Hello " + username)
-  }
-
-  def showAuthPage = Action { implicit request =>
-    Ok(views.html.titleBar())
-  }
-
 
 }
