@@ -67,3 +67,12 @@ SSL connection (cipher: DHE-RSA-AES256-SHA, bits: 256)
 Type "help" for help.
 
 bacardi=> 
+
+
+
+JQuery:
+========
+There's a jquery theme checked into the project and the assets are retrievable with script tags on any page.
+Take a look at http://localhost:9000/assets/javascripts/jquery-ui-1.11.2.custom/index.html after starting the activator
+webserver to see the jquery theme's examples.
+
