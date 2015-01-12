@@ -1,11 +1,14 @@
-
 package controllers
 
-import controllers.handlers.AddExerciseHandler
-import forms.{LoginForm, ExerciseEntriesForm}
-import models.{ExerciseEntries, Users}
+import play.api._
 import play.api.data.{Form, FormError}
 import play.api.mvc._
+import play.api.libs.json.Json
+import play.api.mvc.Security.AuthenticatedBuilder
+
+import controllers.handlers.{AddExerciseHandler}
+import forms.{LoginForm, ExerciseEntriesForm}
+import models.{ExerciseEntries, Users}
 import utils.authentication.{AuthenticationResult, UserAuthenticator}
 
 object Application extends Controller {
