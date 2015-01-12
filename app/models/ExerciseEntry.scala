@@ -9,9 +9,11 @@ import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
 
 
-case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: UtilDate, comment: String, userId: Int) {
+case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: UtilDate, userId: Int, comment: String) {
   def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTime), userId, comment)
-
+  def this(row: ExerciseEntries.RowType) {
+    this(row._1, ExerciseType.withName(row._2), row._3, new UtilDate(row._4.getTime), row._5, row._6)
+  }
 }
 
 object ExerciseType extends Enumeration {
@@ -39,6 +41,12 @@ object ExerciseEntries {
   def add(exEntry: ExerciseEntry): Unit = {
     db.withSession { implicit session =>
       exerciseEntries += exEntry.toRow
+    }
+  }
+
+  def getAllForUser(userId: Int): List[ExerciseEntry]= {
+    db.withSession { implicit session =>
+      exerciseEntries.filter{_.userId === userId}.list.map{new ExerciseEntry(_)}
     }
   }
 }

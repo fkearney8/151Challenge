@@ -3,7 +3,7 @@ package controllers
 
 import controllers.handlers.AddExerciseHandler
 import forms.{LoginForm, ExerciseEntriesForm}
-import models.Users
+import models.{ExerciseEntries, Users}
 import play.api.data.{Form, FormError}
 import play.api.mvc._
 import utils.authentication.{AuthenticationResult, UserAuthenticator}
@@ -19,7 +19,8 @@ object Application extends Controller {
   }
 
   def displayEntries = isAuthenticated { username => implicit request =>
-    Ok(views.html.displayEntries())
+    val allEntries = ExerciseEntries.getAllForUser(UserAuthenticator.getAuthenticatedUser.get.id)
+    Ok(views.html.displayEntries(allEntries))
   }
 
   def viewProgress = isAuthenticated { username => implicit request =>
@@ -59,10 +60,10 @@ object Application extends Controller {
   private val LOGIN_REFERRER: String = "loginReferrer"
 
   def isAuthenticated(f: => String => Request[AnyContent] => Result): EssentialAction = {
-    def userInfo(rh: RequestHeader): Option[String] = { UserAuthenticator.getAuthenticatedUsername(rh) }
+    def userInfo(request: RequestHeader): Option[String] = { UserAuthenticator.getAuthenticatedUsername(request) }
 
-    def onUnauthorized(rh: RequestHeader): Result = {
-      Redirect("/login").withSession(rh.session + (LOGIN_REFERRER, rh.uri))
+    def onUnauthorized(request: RequestHeader): Result = {
+      Redirect("/login").withSession(request.session + (LOGIN_REFERRER, request.uri))
     }
 
     Security.Authenticated(userInfo, onUnauthorized) { user =>

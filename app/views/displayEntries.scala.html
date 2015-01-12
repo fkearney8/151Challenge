@@ -1,8 +1,11 @@
-@()(implicit request: RequestHeader)
+@(userExerciseEntries: List[ExerciseEntry])(implicit request: RequestHeader)
 @main("151 Challenge") {
-    Eventually will display the entries for people here.
-    Perhaps give them the option to delete or edit entries.
 
-    Exercise Reps Date
+    Here are the entries for user: @utils.authentication.UserAuthenticator.getAuthenticatedUsername(request)
+
+    @for(eachEntry <- userExerciseEntries) {
+        <p>@eachEntry.toString</p>
+    }
+
 }
 

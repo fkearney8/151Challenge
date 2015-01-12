@@ -22,11 +22,11 @@ object AddExerciseHandler {
       UserAuthenticator.getAuthenticatedUser(request).fold(BadRequest("No authenticated user when adding exercise")){
         authUser => {
           //ID is 0 here because it does not have an affect on insertion
-          val exerciseEntry = ExerciseEntry(0, formData.exerciseType, formData.reps, formData.when, formData.comment, authUser.id)
+          val exerciseEntry = ExerciseEntry(0, formData.exerciseType, formData.reps, formData.when, authUser.id, formData.comment)
           val errorString = ExerciseEntriesForm.validateEntry(exerciseEntry)
           errorString.fold {
             ExerciseEntries.add(exerciseEntry)
-            Ok("Added exercise")
+            Redirect("/displayEntries")
           }(BadRequest(_))
         }
       }
