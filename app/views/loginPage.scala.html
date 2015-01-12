@@ -7,14 +7,13 @@
     <input type="submit"/>
 }
 
+<h3><a href="/displayRegistration">Register New User</a></h3>
 
 Users in database:<br/>
 
-<li>
-    @{
-        for(user <- usersList) {
-            <li>@user.username</li>
-        }
+<ol>
+    @for(user <- usersList) {
+        <li>@user.username</li>
     }
-</li>
+</ol>
 

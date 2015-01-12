@@ -1,14 +1,29 @@
 package models
 
 import play.api.Logger
+import play.api.libs.Crypto
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
+
 import java.sql.SQLException
 
 case class User(id: Int, email: String, username: String, password: String, admin: Int = 0) {
-  def this(row: Users.RowType) = this(row._1, row._2, row._3, row._4, row._5)
+  //def this(row: Users.RowType) = this(row._1, row._2, row._3, row._4, row._5)
   def toRow: Users.RowType = (id, email, username, password, admin)
+}
+
+object User {
+
+  def apply(row: Users.RowType): User = User(row._1, row._2, row._3, row._4, row._5)
+
+  /**
+   * Hash the password with the applications secret.
+   * The algorithm is the insecure sha1 built in to Play,
+   * but eh... we're not protecting the crown jewels here
+   */
+  def passwordHash(password: String) = Crypto.sign(password)
+
 }
 
 class Users(tag: Tag) extends Table[Users.RowType](tag, "USERS") {
@@ -39,13 +54,13 @@ object Users {
         .take(1)
         .list
         .headOption
-        .map { row => new User(row) }
+        .map { row => User(row) }
     }
   }
 
   def findAll: List[User] = {
     db.withSession { implicit session =>
-      users.list.map { row => new User(row) }
+      users.list.map { row => User(row) }
     }
   }
 }

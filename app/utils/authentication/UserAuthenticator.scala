@@ -9,7 +9,6 @@ object UserAuthenticator {
   val USERNAME_SESSION_KEY: String = "username"
 
   def authenticateUser(username: String, password: String): AuthenticationResult = {
-    //hash the password with the applications secret, algorithm is the insecure sha1 built in to Play, but eh... we're not protecting the crown jewels here
     val passwordSig = Crypto.sign(password)
 
     //retrieve the user and check the password signature from the database

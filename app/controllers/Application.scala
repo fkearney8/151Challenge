@@ -1,11 +1,14 @@
-
 package controllers
 
 import controllers.handlers.AddExerciseHandler
-import forms.{LoginForm, ExerciseEntriesForm}
-import models.{ExerciseEntries, Users}
+import play.api._
 import play.api.data.{Form, FormError}
 import play.api.mvc._
+import play.api.libs.json.Json
+import play.api.mvc.Security.AuthenticatedBuilder
+
+import forms.{LoginForm, ExerciseEntriesForm}
+import models.{User, ExerciseEntries, Users}
 import utils.authentication.{AuthenticationResult, UserAuthenticator}
 
 object Application extends Controller {
@@ -28,7 +31,8 @@ object Application extends Controller {
   }
 
   def login() = Action { implicit request =>
-    Ok(views.html.loginPage(LoginForm.loginForm)(Users.findAll))
+    val allUsers: List[User] = Users.findAll
+    Ok(views.html.loginPage(LoginForm.loginForm)(allUsers))
   }
 
   def loginAction() = Action { implicit request =>

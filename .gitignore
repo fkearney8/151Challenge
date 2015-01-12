@@ -4,6 +4,7 @@ project/target
 target
 tmp
 .history
+.cache
 dist
 /.idea
 /*.iml
@@ -16,3 +17,5 @@ dist
 project/activator-*
 data/
 private/
+*~
+bin/
