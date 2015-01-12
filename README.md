@@ -79,7 +79,23 @@ psql (9.1.14)
 SSL connection (cipher: DHE-RSA-AES256-SHA, bits: 256)
 Type "help" for help.
 
-bacardi=> 
+bacardi=>
+```
+
+# OS X
+
+```
+# Because I don't like creating unnecessary roles in my development DBs
+export DB_USER=$USER
+export DB_PASSWORD=
+
+# Postgres configuration
+brew install postgres
+postgres -D /usr/local/var/postgres
+psql postgres --command="create database bacardi"
+
+# Test the connection
+psql -h localhost -p 5432 -W bacardi $USER
 ```
 
 # JQuery
