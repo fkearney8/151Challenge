@@ -5,7 +5,7 @@ package object models {
   import play.api.Logger
   import play.api.Play.current
 
-  def db = {
+  lazy val db = {
     Logger.debug(s"Configuring slick database: $DB")
     Database.forDataSource(DB.getDataSource())
   }
