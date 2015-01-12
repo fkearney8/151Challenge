@@ -9,7 +9,7 @@ import forms.RegistrationForm
 import models._
 import utils.authentication._
 
-object Registration extends Controller {
+object Registration extends BaseController {
 
   def displayRegistration = Action { implicit request =>
     Ok(views.html.registrationPage(RegistrationForm.form))

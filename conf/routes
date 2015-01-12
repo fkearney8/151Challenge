@@ -5,9 +5,9 @@
 # Home page
 GET         /                      controllers.Application.index
 
-GET        /login                 controllers.Application.login
-POST       /login                 controllers.Application.loginAction
-GET        /logout                controllers.Application.logout
+GET        /login                 controllers.LoginController.login
+POST       /login                 controllers.LoginController.loginAction
+GET        /logout                controllers.LoginController.logout
 GET        /displayRegistration   controllers.Registration.displayRegistration
 POST       /registerUser          controllers.Registration.registerUser
 
