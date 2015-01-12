@@ -1,22 +1,22 @@
 package utils.authentication
 
-import models.{User, Users}
 import play.api.libs.Crypto
 import play.api.mvc.{AnyContent, Request, RequestHeader}
+
+import models.{User, Users}
 
 object UserAuthenticator {
 
   val USERNAME_SESSION_KEY: String = "username"
 
   def authenticateUser(username: String, password: String): AuthenticationResult = {
-    val passwordSig = Crypto.sign(password)
-
     //retrieve the user and check the password signature from the database
-    val userOption = Users.findByEmailOrUsername("", username)
-    userOption match {
+    val passwordSig = Crypto.sign(password)
+    Users.findByLoginIdentifier(username) match {
       case Some(user) =>
-        AuthenticationResult(true, user.password == passwordSig)
-      case None => AuthenticationResult(false, false)
+        AuthenticationResult(Some(user), user.password == passwordSig)
+      case None =>
+        AuthenticationResult(None, false)
     }
   }
 
@@ -25,12 +25,9 @@ object UserAuthenticator {
   }
 
   def getAuthenticatedUser(implicit request: RequestHeader): Option[User] = {
-    val username = getAuthenticatedUsername(request)
-    val user: Option[User] = username.map{ usernameString =>
-      Users.findByEmailOrUsername("", usernameString).get
-    }
-    user
+    getAuthenticatedUsername(request)
+      .map { usernameString => Users.findByUsername(usernameString).get }
   }
 }
 
-case class AuthenticationResult(userExists: Boolean, authenticated: Boolean)
+case class AuthenticationResult(user: Option[User], authenticated: Boolean)

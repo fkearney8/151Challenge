@@ -9,7 +9,6 @@ import scala.slick.lifted.ProvenShape
 import java.sql.SQLException
 
 case class User(id: Int, email: String, username: String, password: String, admin: Int = 0) {
-  //def this(row: Users.RowType) = this(row._1, row._2, row._3, row._4, row._5)
   def toRow: Users.RowType = (id, email, username, password, admin)
 }
 
@@ -41,6 +40,12 @@ object Users {
 
   val users = TableQuery[Users]
 
+  /**
+   * May be used to validate/detect an email address.
+   * TODO: Find a better regex.  
+   */
+  private val EMAIL_REGEX = ".+@.+".r
+
   def add(user: User) {
     db.withSession { implicit session =>
       users += user.toRow
@@ -48,19 +53,39 @@ object Users {
   }
 
   def findByEmailOrUsername(email: String, username: String): Option[User] = {
-    db.withSession { implicit session =>
-      users
-        .filter { user => user.email === email || user.username === username }
-        .take(1)
-        .list
-        .headOption
-        .map { row => User(row) }
-    }
+    findSingleUser { user => user.email === email || user.username === username }
+  }
+
+  def findByEmail(email: String): Option[User] = {
+    findSingleUser { user => user.email === email }
+  }
+
+  def findByUsername(username: String): Option[User] = {
+    findSingleUser { user => user.username === username }
+  }
+
+  /**
+   * Detects the type of identifier for the user and looks up the user. 
+   */
+  def findByLoginIdentifier(emailOrUsername: String): Option[User] = emailOrUsername match {
+    case EMAIL_REGEX() => findByEmail(emailOrUsername)
+    case _           => findByUsername(emailOrUsername) 
   }
 
   def findAll: List[User] = {
     db.withSession { implicit session =>
       users.list.map { row => User(row) }
+    }
+  }
+
+  private def findSingleUser(userFilter: Users => Column[Boolean]): Option[User] = {
+    db.withSession { implicit session =>
+      users
+        .filter(userFilter)
+        .take(1)
+        .list
+        .headOption
+        .map { row => User(row) }
     }
   }
 }

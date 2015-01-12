@@ -41,10 +41,12 @@ object Application extends Controller {
       case (username, password) =>
         val authResult = UserAuthenticator.authenticateUser(username, password)
         authResult match {
-          case AuthenticationResult(true, true) =>
+          case AuthenticationResult(Some(user), true) =>
             val redirect = request.session.get(LOGIN_REFERRER).getOrElse("/")
-            Redirect(redirect).withSession(request.session - LOGIN_REFERRER + (UserAuthenticator.USERNAME_SESSION_KEY, username))
-          case AuthenticationResult(false, _) =>
+            Redirect(redirect).withSession(
+              request.session - LOGIN_REFERRER +
+              (UserAuthenticator.USERNAME_SESSION_KEY -> user.username))
+          case AuthenticationResult(None, _) =>
             Ok("User " + username + " does not exist.")
           case AuthenticationResult(_, false) =>
             Ok("Password is not correct")
