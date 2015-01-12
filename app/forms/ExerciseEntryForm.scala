@@ -35,7 +35,7 @@ object ExerciseEntriesForm {
       val startOfChallenge = Calendar.getInstance()
       startOfChallenge.set(Calendar.YEAR, 2015)
       startOfChallenge.set(Calendar.MONTH, Calendar.JANUARY)
-      startOfChallenge.set(Calendar.DAY_OF_MONTH, 12)
+      startOfChallenge.set(Calendar.DAY_OF_MONTH, 11)
 
       if (whenEntryDone.compareTo(twoWeeksAgo) < 0) {
         Some("Date cannot be more than 2 weeks in the past. Get with the program.")
