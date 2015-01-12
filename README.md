@@ -99,8 +99,7 @@ psql -h localhost -p 5432 -W bacardi $USER
 ```
 
 # JQuery
+JQuery assets are available on every page based on the "main" template, and can be added elsewhere. We have the option
+of using a custom theme but we can use that default one from the CDN for now.
 
-There's a jquery theme checked into the project and the assets
-are retrievable with script tags on any page.  Take a look at
-http://localhost:9000/assets/javascripts/jquery-ui-1.11.2.custom/index.html
-after starting the activator webserver to see the jquery theme's examples.
+
