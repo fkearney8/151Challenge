@@ -10,7 +10,7 @@ import scala.slick.lifted.ProvenShape
 
 
 case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: UtilDate, comment: String, userId: Int) {
-  def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, new SqlDate(when.getTime), userId, comment)
+  def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTime), userId, comment)
 
 }
 
@@ -21,17 +21,18 @@ object ExerciseType extends Enumeration {
 class ExerciseEntries(tag: Tag) extends Table[ExerciseEntries.RowType](tag, "EXERCISE_ENTRIES") {
   def id           = column[Int]("id", O.AutoInc, O.PrimaryKey)
   def exerciseType = column[String]("exercisetype")
+  def reps         = column[Double]("reps")
   def dateDone     = column[SqlDate]("datedone")
   def userId       = column[Int]("userid")
   def comment      = column[String]("comment")
 
   def user = foreignKey("EXERCISE_ENTRIES_userid_fkey", userId, Users.users)(_.id)
 
-  def * : ProvenShape[ExerciseEntries.RowType] = (id, exerciseType, dateDone, userId, comment)
+  def * : ProvenShape[ExerciseEntries.RowType] = (id, exerciseType, reps, dateDone, userId, comment)
 }
 
 object ExerciseEntries {
-  type RowType = (Int, String, SqlDate, Int, String)
+  type RowType = (Int, String, Double, SqlDate, Int, String)
 
   val exerciseEntries = TableQuery[ExerciseEntries]
 
