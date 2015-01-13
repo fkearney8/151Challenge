@@ -1,18 +1,31 @@
-@(registrationForm: Form[forms.RegistrationForm.FormData])
+@(registrationForm: Form[forms.RegistrationForm.FormData])(implicit request: RequestHeader)
 
-@if(registrationForm.hasGlobalErrors) {
-  <ul>
-  @for(error <- registrationForm.globalErrors) {
-    <li>@error.message</li>
-  }
-  </ul>
-}
+@main("151 Challenge: User Registration") {
 
-@helper.form(action = routes.Registration.registerUser()) {
-  @helper.inputText(registrationForm("username"))
-  @helper.inputPassword(registrationForm("password1"))
-  @helper.inputPassword(registrationForm("password2"))
-  @helper.inputText(registrationForm("email"))
-  @helper.inputPassword(registrationForm("passcode"))
-  <input type="submit" value="Register"/>
+  <div id="user_registration">
+
+    <h1>User Registration</h1>
+
+    <div class="page_message">
+      Sign up for the 151 Challenge!
+    </div> 
+
+    @errors(registrationForm)
+    
+    @helper.form(action = routes.Registration.registerUser(), 'class -> "registration_form") {
+      @helper.inputText(registrationForm("username"), '_label -> "Username:")
+      @helper.inputPassword(registrationForm("password1"), '_label -> "Password:")
+      @helper.inputPassword(registrationForm("password2"), '_label -> "Password (repeat):")
+      @helper.inputText(registrationForm("email"), '_label -> "Email:")
+      @helper.inputPassword(registrationForm("passcode"), '_label -> "Passcode:")
+      <input type="submit" value="Register"/>
+    }
+
+    <div class="security_message">
+      Security Warning: This website is not using HTTPS.  You should not use
+      the same password for this site as you use for other websites.
+    </div> 
+
+  </div> 
+
 }

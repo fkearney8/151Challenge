@@ -46,7 +46,10 @@ object Registration extends BaseController {
     Users.findByEmailOrUsername(data.email, data.username).isDefined
   }
 
-  private def withGlobalError(data: RegistrationForm.FormData, message: String) = {
+  private def withGlobalError
+    (data: RegistrationForm.FormData, message: String)
+    (implicit request: Request[_]) =
+  {
     views.html.registrationPage(
       RegistrationForm.form
         .fill(data)

@@ -1,19 +1,20 @@
-@(loginForm: Form[(String, String)])(usersList: List[User])
 @import forms.LoginForm
 
-@helper.form(action = routes.LoginController.loginAction()) {
-    @helper.inputText(loginForm(LoginForm.USERNAME_FIELD))
-    @helper.inputPassword(loginForm(LoginForm.PASSWORD_FIELD))
-    <input type="submit"/>
-}
+@(loginForm: Form[(String, String)])(implicit request: RequestHeader)
 
-<h3><a href="/displayRegistration">Register New User</a></h3>
+@main("151 Challenge: Login") {
 
-Users in database:<br/>
+  <div id="user_login">
 
-<ol>
-    @for(user <- usersList) {
-        <li>@user.username</li>
+    <h1>151 Challenge: Login</h1>
+
+    @errors(loginForm)
+    
+    @helper.form(action = routes.LoginController.loginAction()) {
+      @helper.inputText(loginForm(LoginForm.USERNAME_FIELD), '_label -> "Username:")
+      @helper.inputPassword(loginForm(LoginForm.PASSWORD_FIELD), '_label -> "Password:")
+      <input type="submit" value="Login"/>
     }
-</ol>
 
+  </div>
+}

@@ -1,0 +1,11 @@
+@import play.api.data.Form
+
+@(form: Form[_])(implicit request: RequestHeader)
+
+@if(form.hasGlobalErrors) {
+  <ul class="global_error_messages">
+    @for(error <- form.globalErrors) {
+      <li>@error.message</li>
+    }
+  </ul>
+}

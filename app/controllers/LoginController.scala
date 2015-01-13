@@ -10,8 +10,7 @@ import utils.authentication._
 object LoginController extends BaseController {
   
   def login() = Action { implicit request =>
-    val allUsers: List[User] = Users.findAll
-    Ok(views.html.loginPage(LoginForm.loginForm)(allUsers))
+    Ok(views.html.loginPage(LoginForm.loginForm))
   }
 
   def loginAction() = Action { implicit request =>
@@ -26,9 +25,9 @@ object LoginController extends BaseController {
               request.session - LOGIN_REFERRER +
               (UserAuthenticator.USERNAME_SESSION_KEY -> user.username))
           case AuthenticationResult(None, _) =>
-            Ok("User " + username + " does not exist.")
+            Ok(withGlobalError("User " + username + " does not exist."))
           case AuthenticationResult(_, false) =>
-            Ok("Password is not correct")
+            Ok(withGlobalError("Password is not correct"))
         }
       case _ => BadRequest("Something went wrong, no login info posted")
     }
@@ -36,6 +35,10 @@ object LoginController extends BaseController {
 
   def logout() = Action { implicit request =>
     Redirect("/login").withNewSession
+  }
+
+  private def withGlobalError(error: String)(implicit request: Request[_]) = {
+    views.html.loginPage(LoginForm.loginForm.withGlobalError(error))
   }
 
 }
