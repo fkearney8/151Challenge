@@ -1,0 +1,17 @@
+table.standard {
+    border-collapse: collapse;
+}
+
+table.standard tr {
+    background-color: #9d9d9d;
+}
+
+table.standard td {
+    border: 1px solid #aaaaaa;
+    padding: 7px 5px;
+    vertical-align: top;
+}
+
+table.standard tr:nth-child(odd) {
+    background-color: #d4d4d4;
+}

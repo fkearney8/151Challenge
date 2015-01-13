@@ -3,9 +3,22 @@
 
     Here are the entries for user: @utils.authentication.UserAuthenticator.getAuthenticatedUsername(request)
 
+    <table class="standard">
+        <tr>
+            <th>Exercise Type</th>
+            <th>Reps</th>
+            <th>When</th>
+            <th>Comment</th>
+        </tr>
     @for(eachEntry <- userExerciseEntries) {
-        <p>@eachEntry.toString</p>
+        <tr>
+            <td>@eachEntry.exerciseType</td>
+            <td>@eachEntry.reps</td>
+            <td>@eachEntry.when</td>
+            <td>@eachEntry.comment</td>
+        </tr>
     }
+    </table>
 
 }
 

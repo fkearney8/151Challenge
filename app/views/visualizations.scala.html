@@ -1,0 +1,11 @@
+@()(implicit request: RequestHeader)
+
+@main("Data visualizations") {
+    <div>
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+
+    <div id="legend"></div>
+
+    <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
+}

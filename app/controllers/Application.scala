@@ -33,4 +33,7 @@ object Application extends BaseController {
     AddExerciseHandler.addExerciseEntry
   }
 
+  def visualizations() = Action { implicit request =>
+    Ok(views.html.visualizations())
+  }
 }
