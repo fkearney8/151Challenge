@@ -15,7 +15,7 @@ POST        /registerUser               controllers.Registration.registerUser
 GET         /record                     controllers.Application.recordExercise
 POST        /record                     controllers.Application.addExerciseEntry
 GET         /displayEntries             controllers.Application.displayEntries
-GET         /viewProgress               controllers.Application.viewProgress
+GET         /leaderboard                controllers.Application.leaderboard
 GET         /visualizations             controllers.Application.visualizations
 
 # Map static resources from the /public folder to the /assets URL path

@@ -1,0 +1,20 @@
+@(userTotals: List[(controllers.handlers.UserAggregateExercises, controllers.handlers.PercentagesCompleted)])(implicit request: RequestHeader)
+
+@main("Progress") {
+
+    <h3>Leader Board</h3>
+
+    <table class="standard">
+        <tr><th>151er</th><th>Sit Ups</th><th>Lunges</th><th>Burpees</th><th>Miles</th><th>Overall Completion</th></tr>
+        @userTotals.map{ case (userTotal, percentagesCompleted) =>
+            <tr>
+                <td>@userTotal.username</td>
+                <td>@userTotal.situps (@percentagesCompleted.sitUpsPercent%)</td>
+                <td>@userTotal.lunges (@percentagesCompleted.lungesPercent%)</td>
+                <td>@userTotal.burpees (@percentagesCompleted.burpeesPercent%)</td>
+                <td>@userTotal.miles  (@percentagesCompleted.milesPercent%)</td>
+                <td>@percentagesCompleted.overallPercent%</td>
+            </tr>
+        }
+    </table>
+}

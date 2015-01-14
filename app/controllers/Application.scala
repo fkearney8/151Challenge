@@ -1,13 +1,9 @@
 package controllers
 
-import play.api._
-import play.api.data.{Form, FormError}
-import play.api.mvc._
-import play.api.libs.json.Json
-
-import controllers.handlers.AddExerciseHandler
+import controllers.handlers.{ViewProgressHandler, AddExerciseHandler}
 import forms.ExerciseEntriesForm
-import models.{User, ExerciseEntries, Users}
+import models.ExerciseEntries
+import play.api.mvc._
 import utils.authentication._
 
 object Application extends BaseController {
@@ -25,8 +21,9 @@ object Application extends BaseController {
     Ok(views.html.displayEntries(allEntries))
   }
 
-  def viewProgress = isAuthenticated { username => implicit request =>
-    Ok(views.html.viewProgress())
+  def leaderboard = isAuthenticated { username => implicit request =>
+    val eachUserTotalsWPercentages = ViewProgressHandler.eachUserTotalsWithPercentages()
+    Ok(views.html.leaderboard(eachUserTotalsWPercentages))
   }
 
   def addExerciseEntry() = isAuthenticated { username => implicit request =>
