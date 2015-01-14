@@ -20,6 +20,6 @@ object PercentageCalculator {
   def burpeesPercentComplete(repsDone: Double): Double = doubleToPercentage(repsDone / TOTAL_BURPEES)
   def milesPercentComplete(repsDone: Double): Double = doubleToPercentage(repsDone / TOTAL_MILES)
 
-  def doubleToPercentage(rawPercentage: Double): Double = roundToTwoDecmalPoints(rawPercentage) * 100
+  def doubleToPercentage(rawPercentage: Double): Double = Math.round(rawPercentage * 10000.0) / 100.0
   def roundToTwoDecmalPoints(raw: Double): Double = Math.round(raw * 100.0) / 100.0
 }
