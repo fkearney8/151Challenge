@@ -1,7 +1,7 @@
 package models
 
-import java.util.{Date => UtilDate}
 import java.sql.{Date => SqlDate}
+import java.util.Calendar
 
 import play.api.Logger
 
@@ -9,10 +9,15 @@ import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
 
 
-case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: UtilDate, userId: Int, comment: String) {
-  def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTime), userId, comment)
+case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: Calendar, userId: Int, comment: String) {
+  def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTimeInMillis), userId, comment)
   def this(row: ExerciseEntries.RowType) {
-    this(row._1, ExerciseType.withName(row._2), row._3, new UtilDate(row._4.getTime), row._5, row._6)
+    this(row._1, ExerciseType.withName(row._2), row._3, {
+          val entryCal = Calendar.getInstance()
+          entryCal.setTimeInMillis(row._4.getTime)
+          entryCal
+        },
+      row._5, row._6)
   }
 }
 
@@ -44,9 +49,16 @@ object ExerciseEntries {
     }
   }
 
-  def getAllForUser(userId: Int): List[ExerciseEntry]= {
+  def getAllForUser(userId: Int): List[ExerciseEntry] = {
     db.withSession { implicit session =>
       exerciseEntries.filter{_.userId === userId}.list.map{new ExerciseEntry(_)}
     }
   }
+
+  def getAll(): List[ExerciseEntry] = {
+    db.withSession { implicit session =>
+      exerciseEntries.list.map{new ExerciseEntry(_)}
+    }
+  }
+
 }

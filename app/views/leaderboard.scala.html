@@ -1,4 +1,6 @@
-@(userTotals: List[(controllers.handlers.UserAggregateExercises, controllers.handlers.PercentagesCompleted)])(implicit request: RequestHeader)
+@(userTotals: List[(controllers.handlers.UserAggregateExercises, controllers.handlers.PercentagesCompleted)],
+        bestDayYesterday: controllers.handlers.UserAggregateExercises)(implicit request: RequestHeader)
+
 
 @main("Progress") {
 
@@ -17,4 +19,9 @@
             </tr>
         }
     </table>
+
+    <div style="padding-top: 20px">
+        The best day yesterday was: @bestDayYesterday.username with @bestDayYesterday.situps situps, @bestDayYesterday.lunges lunges,
+        @bestDayYesterday.burpees burpees and @bestDayYesterday.miles miles.
+    </div>
 }

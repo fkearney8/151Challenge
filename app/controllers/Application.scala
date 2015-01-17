@@ -3,6 +3,7 @@ package controllers
 import controllers.handlers.{ViewProgressHandler, AddExerciseHandler}
 import forms.ExerciseEntriesForm
 import models.ExerciseEntries
+import play.api.Logger
 import play.api.mvc._
 import utils.authentication._
 
@@ -23,7 +24,9 @@ object Application extends BaseController {
 
   def leaderboard = isAuthenticated { username => implicit request =>
     val eachUserTotalsWPercentages = ViewProgressHandler.eachUserTotalsWithPercentages()
-    Ok(views.html.leaderboard(eachUserTotalsWPercentages))
+    val bestDayYesterday = ViewProgressHandler.bestDayYesterday()
+    Logger.debug("BestDayYesterday: " + bestDayYesterday)
+    Ok(views.html.leaderboard(eachUserTotalsWPercentages, bestDayYesterday))
   }
 
   def addExerciseEntry() = isAuthenticated { username => implicit request =>

@@ -1,5 +1,7 @@
 package controllers.handlers
 
+import java.util.Calendar
+
 import models.ExerciseType
 
 object OneFiveOneConstants {
@@ -8,6 +10,22 @@ object OneFiveOneConstants {
   val TOTAL_BURPEES = 1051
   val TOTAL_MILES = 151
   val TOTAL_SHOTS = 1
+
+  val START_OF_CHALLENGE = {
+    val startOfChallenge = Calendar.getInstance()
+    startOfChallenge.set(Calendar.YEAR, 2015)
+    startOfChallenge.set(Calendar.MONTH, Calendar.JANUARY)
+    startOfChallenge.set(Calendar.DAY_OF_MONTH, 12)
+    roundToDay(startOfChallenge)
+    startOfChallenge
+  }
+
+  def roundToDay(calendar: Calendar) {
+    calendar.set(Calendar.HOUR, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+  }
 
   def exerciseTypeToTotalsMap(): Map[ExerciseType.Value, Int] = {
     Map(ExerciseType.SitUps -> TOTAL_SIT_UPS,

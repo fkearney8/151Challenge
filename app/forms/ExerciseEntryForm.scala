@@ -2,7 +2,9 @@ package forms
 
 import java.util.{Calendar, Date}
 
+import controllers.handlers.{ViewProgressHandler, OneFiveOneConstants}
 import models.{ExerciseType, ExerciseEntry}
+import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{FormError, _}
@@ -28,18 +30,12 @@ object ExerciseEntriesForm {
         else None
     }
     val dateValidationString = {
-      val whenEntryDone = Calendar.getInstance
-      whenEntryDone.setTime(entry.when)
+
       val twoWeeksAgo = Calendar.getInstance()
       twoWeeksAgo.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 14))
-      val startOfChallenge = Calendar.getInstance()
-      startOfChallenge.set(Calendar.YEAR, 2015)
-      startOfChallenge.set(Calendar.MONTH, Calendar.JANUARY)
-      startOfChallenge.set(Calendar.DAY_OF_MONTH, 11)
-
-      if (whenEntryDone.compareTo(twoWeeksAgo) < 0) {
+      if (entry.when.compareTo(twoWeeksAgo) < 0) {
         Some("Date cannot be more than 2 weeks in the past. Get with the program.")
-      } else if (whenEntryDone.compareTo(startOfChallenge) < 0) {
+      } else if (entry.when.compareTo(OneFiveOneConstants.START_OF_CHALLENGE) < 0) {
         Some("Date cannot be before the start of the challenge, cheater.")
       } else None
     }
