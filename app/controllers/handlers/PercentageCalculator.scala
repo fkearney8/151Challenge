@@ -15,9 +15,9 @@ object PercentageCalculator {
     roundToTwoDecimalPoints(totalPercentages / 4.0)
   }
 
-  def sitUpsPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone / TOTAL_SIT_UPS)
-  def lungesPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone / TOTAL_LUNGES)
-  def burpeesPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone / TOTAL_BURPEES)
+  def sitUpsPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone.toDouble / TOTAL_SIT_UPS)
+  def lungesPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone.toDouble / TOTAL_LUNGES)
+  def burpeesPercentComplete(repsDone: Int): Double = doubleToPercentage(repsDone.toDouble / TOTAL_BURPEES)
   def milesPercentComplete(repsDone: BigDecimal): Double = doubleToPercentage((repsDone / TOTAL_MILES).toDouble)
 
   def doubleToPercentage(rawPercentage: Double): Double = Math.round(rawPercentage * 10000.0) / 100.0
