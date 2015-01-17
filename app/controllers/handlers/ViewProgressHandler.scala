@@ -30,30 +30,31 @@ object ViewProgressHandler {
     }.sortBy{overallPercentageOrdering}.reverse
   }
 
-  def overallPercentageOrdering(totalAndPercentages: (UserAggregateExercises, PercentagesCompleted)): Double = {
+  def overallPercentageOrdering(totalAndPercentages: (UserAggregateExercises, PercentagesCompleted)): BigDecimal = {
     totalAndPercentages._2.overallPercent
   }
 
-  def sumEntries(entriesPerUser: List[ExerciseEntry]): Map[ExerciseType.Value, Double] = {
-    val totalsForUser = entriesPerUser.foldLeft(Map.empty[ExerciseType.Value, Double])((runningTotals: Map[ExerciseType.Value, Double], exerciseEntry: ExerciseEntry) => {
+  def sumEntries(entriesPerUser: List[ExerciseEntry]): Map[ExerciseType.Value, BigDecimal] = {
+    val totalsForUser = entriesPerUser.foldLeft{Map.empty[ExerciseType.Value, BigDecimal]} {
+        (runningTotals: Map[ExerciseType.Value, BigDecimal], exerciseEntry: ExerciseEntry) => {
       val exerciseType: ExerciseType.Value = exerciseEntry.exerciseType
-      val currentAmount = runningTotals.getOrElse(exerciseType, 0.0)
+      val currentAmount = runningTotals.getOrElse(exerciseType, BigDecimal(0))
       runningTotals + (exerciseType -> (currentAmount + exerciseEntry.reps))
-    })
+    }}
     totalsForUser
   }
 }
 
-case class UserAggregateExercises(userId: Int, username: String, situps: Int, lunges: Int, burpees: Int, miles: Double) {
-  def this(user: User, totalsMap: Map[ExerciseType.Value, Double]) {
+case class UserAggregateExercises(userId: Int, username: String, situps: Int, lunges: Int, burpees: Int, miles: BigDecimal) {
+  def this(user: User, totalsMap: Map[ExerciseType.Value, BigDecimal]) {
     this(user.id, user.username,
-      totalsMap.getOrElse(ExerciseType.SitUps, 0.0).toInt,
-      totalsMap.getOrElse(ExerciseType.Lunges, 0.0).toInt,
-      totalsMap.getOrElse(ExerciseType.Burpees, 0.0).toInt,
-      totalsMap.getOrElse(ExerciseType.Miles, 0.0)
+      totalsMap.getOrElse(ExerciseType.SitUps, BigDecimal(0)).toInt,
+      totalsMap.getOrElse(ExerciseType.Lunges, BigDecimal(0)).toInt,
+      totalsMap.getOrElse(ExerciseType.Burpees, BigDecimal(0)).toInt,
+      totalsMap.getOrElse(ExerciseType.Miles, BigDecimal(0))
     )
   }
 }
 
-case class PercentagesCompleted(sitUpsPercent: Double, lungesPercent: Double, burpeesPercent: Double, milesPercent: Double, overallPercent: Double)
+case class PercentagesCompleted(sitUpsPercent: BigDecimal, lungesPercent: BigDecimal, burpeesPercent: BigDecimal, milesPercent: BigDecimal, overallPercent: BigDecimal)
 
