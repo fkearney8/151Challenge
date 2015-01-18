@@ -24,9 +24,9 @@ object Application extends BaseController {
 
   def leaderboard = isAuthenticated { username => implicit request =>
     val eachUserTotalsWPercentages = ViewProgressHandler.eachUserTotalsWithPercentages()
-    val bestDayYesterday = ViewProgressHandler.bestDayYesterday()
-    Logger.debug("BestDayYesterday: " + bestDayYesterday)
-    Ok(views.html.leaderboard(eachUserTotalsWPercentages, bestDayYesterday))
+    Ok(views.html.leaderboard(eachUserTotalsWPercentages, ViewProgressHandler.bestProgressYesterday(),
+        ViewProgressHandler.bestSitUpsYesterday(), ViewProgressHandler.bestLungesYesterday(), ViewProgressHandler.bestBurpeesYesterday(),
+        ViewProgressHandler.bestMilesYesterday()))
   }
 
   def addExerciseEntry() = isAuthenticated { username => implicit request =>

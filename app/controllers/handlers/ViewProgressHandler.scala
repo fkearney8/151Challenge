@@ -1,8 +1,8 @@
 package controllers.handlers
 
-import OneFiveOneUtils._
 import java.util.{TimeZone, Calendar}
 
+import controllers.handlers.OneFiveOneUtils._
 import models._
 import play.api.Logger
 
@@ -22,7 +22,7 @@ object ViewProgressHandler {
   def eachUserTotalsWithPercentages(): List[(UserAggregateExercises, PercentagesCompleted)] = {
     val userTotals = eachUserTotals()
     userTotals.map{userTotal =>
-      import PercentageCalculator._
+      import controllers.handlers.PercentageCalculator._
       val percentagesCompleted = PercentagesCompleted(
         sitUpsPercentComplete(userTotal.situps),
         lungesPercentComplete(userTotal.lunges),
@@ -53,7 +53,7 @@ object ViewProgressHandler {
    */
   def totalsPerDayPerUser(): List[(Calendar, List[UserAggregateExercises])] = {
     //from the start of the challenge until today
-    val eachDayFromStartToYesterday = fromStartToYesterday()
+    val eachDayFromStartToYesterday = fromStartToToday()
     val allEntries = ExerciseEntries.getAll()
     val allUsers = Users.findAll
 
@@ -74,29 +74,39 @@ object ViewProgressHandler {
     dailyEntryTotals.sortBy(calendarAndMap => calendarAndMap._1.getTimeInMillis).toList
   }
 
-  def bestDayYesterday(): UserAggregateExercises = {
-    val totalsPerDay = totalsPerDayPerUser()
-
-    totalsPerDay.foreach { calAndTotals =>
-      Logger.debug("\n\nFor date: " + printableDate(calAndTotals._1))
-      val userTotalsForDay = calAndTotals._2
-      userTotalsForDay.foreach(eachTotal => Logger.debug("\t" + eachTotal))
-    }
-
-    val yesterdaysEntries = totalsPerDayPerUser().find(dailyEntries => isGivenTimeWithinDay(dailyEntries._1, getYesterday()))
-    yesterdaysEntries match {
+  /**
+   *
+   * @param day the day on which to find the best entry
+   * @param sorterLt A sorting order on the user totals to find the 'best' that you're looking for.
+   */
+  def bestProgressOnDay(day: Calendar, sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean): UserAggregateExercises = {
+    val entriesOnDay = totalsPerDayPerUser().find(dailyEntries => isGivenTimeWithinDay(dailyEntries._1, day))
+    entriesOnDay match {
       case Some((yesterday: Calendar, yesterdaysEntries: List[UserAggregateExercises])) =>
-        //TODO tries to use a negative ordering here, basically adding a unary - and not reversing, so that we could pass in the ordering function to use for
-        // sorting entries, but it didn't work for some reason. Non-negative ordering with a reverse works fine, but then the ordering
-        // transformation is actually the opposite of what is really desired, so passing it in makes less sense.
-        //yesterdaysEntries.sortBy(userTotals => -PercentageCalculator.calculateOverallPercentComplete(userTotals)).head
-        yesterdaysEntries.sortBy(userTotals => PercentageCalculator.calculateOverallPercentComplete(userTotals)).reverse.head
+        yesterdaysEntries.sortWith(sorterLt).head
       case None =>
         UserAggregateExercises(-1, "No One", 0, 0, 0, 0)
     }
-
-//    def transformerForUserTotals(userTotals: UserAggregateExercises) = -PercentageCalculator.calculateOverallPercentComplete(userTotals)
   }
+
+  /** Convenience method to create functions for finding the greater of two UserAggregateExercises based on the tranfotmation
+    * given.
+    * @param uaeTranformation How to transform UAEs to compare them.
+    * @return a function for use in a sortWith to compare UAEs
+    */
+  def findTheGreatestOf(uaeTranformation: (UserAggregateExercises => BigDecimal)): (UserAggregateExercises, UserAggregateExercises) => Boolean = {
+    case (uae1: UserAggregateExercises, uae2: UserAggregateExercises) =>
+      uaeTranformation(uae1) > uaeTranformation(uae2)
+  }
+
+  def bestSitUpsYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf((uae: UserAggregateExercises) => uae.situps))
+  def bestLungesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf((uae: UserAggregateExercises) => uae.lunges))
+  def bestBurpeesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf((uae: UserAggregateExercises) => uae.burpees))
+  def bestMilesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf((uae: UserAggregateExercises) => uae.miles))
+
+  def bestProgressYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf((uae: UserAggregateExercises) =>
+      PercentageCalculator.calculateOverallPercentComplete(uae)))
+
 
   private def wasEntryOnDay(eachEntry: ExerciseEntry, dayInQuestion: Calendar): Boolean = {
     val entryDay = eachEntry.when
@@ -113,22 +123,33 @@ object ViewProgressHandler {
     nextDay
   }
 
-  def getYesterday(): Calendar = {
-    //calculate yesterday based on PST, so that our west coasters see yesterday making sense after 9pm
-    val yesterday = Calendar.getInstance()
-    OneFiveOneUtils.roundToDay(yesterday)
-    yesterday.roll(Calendar.DAY_OF_YEAR, -1)
-    Logger.debug("Yesterday is " + printableDate(yesterday) + " or more fully: " + yesterday)
-    yesterday
+  def getYesterday: Calendar = {
+    //calculate yesterday based on PST, so that our west coasters see yesterday making sense after 4pm when UTC flips over.
+    val yesterdayPT = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+    OneFiveOneUtils.roundToDay(yesterdayPT)
+    yesterdayPT.roll(Calendar.DAY_OF_YEAR, -1)
+
+    //create a 'yesterday' in the default TZ, (which will be UTC on the production host, but this will work regardless of what it is)
+    // and set the year, month, and day for the pacific time's yesterday onto it. We have to do this because we want to be
+    // looking for exercises that are marked as entered at 12:00am on yesterday in the default time zone of the remote host, but we
+    // want to think of yesterday as the day before today in pacific time.
+    val yesterdayDefaultTZ = Calendar.getInstance()
+    yesterdayDefaultTZ.set(Calendar.YEAR, yesterdayPT.get(Calendar.YEAR))
+    yesterdayDefaultTZ.set(Calendar.MONTH, yesterdayPT.get(Calendar.MONTH))
+    yesterdayDefaultTZ.set(Calendar.DAY_OF_YEAR, yesterdayPT.get(Calendar.DAY_OF_YEAR))
+    OneFiveOneUtils.roundToDay(yesterdayDefaultTZ)
+
+    yesterdayDefaultTZ
   }
 
-  private def fromStartToYesterday(): Seq[Calendar] = {
+  private def fromStartToToday(): Seq[Calendar] = {
     val start = OneFiveOneConstants.START_OF_CHALLENGE
-    //TODO make this a nice recursive without the vars
-    val yesterday = getYesterday()
     var currentDay = start
+    val today = roundToDay(Calendar.getInstance())
+
     var output = List.empty[Calendar]
-    while (currentDay.compareTo(yesterday) <= 0) {
+    //TODO make this a nice recursive without the vars
+    while (currentDay.compareTo(today) <= 0) {
       output = output :+ currentDay
       currentDay = nextDay(currentDay)
     }

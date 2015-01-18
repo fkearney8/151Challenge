@@ -1,6 +1,9 @@
 @(userTotals: List[(controllers.handlers.UserAggregateExercises, controllers.handlers.PercentagesCompleted)],
-        bestDayYesterday: controllers.handlers.UserAggregateExercises)(implicit request: RequestHeader)
-
+        bestDayYesterday: controllers.handlers.UserAggregateExercises,
+        bestSitUpsYesterday: controllers.handlers.UserAggregateExercises,
+        bestLungesYesterday: controllers.handlers.UserAggregateExercises,
+        bestBurpeesYesterday: controllers.handlers.UserAggregateExercises,
+        bestMilesYesterday: controllers.handlers.UserAggregateExercises)(implicit request: RequestHeader)
 
 @main("Progress") {
 
@@ -21,7 +24,14 @@
     </table>
 
     <div style="padding-top: 20px">
-        The best day yesterday was: @bestDayYesterday.username with @bestDayYesterday.situps situps, @bestDayYesterday.lunges lunges,
-        @bestDayYesterday.burpees burpees and @bestDayYesterday.miles miles.
+
+        <b>The best scores yesterday were: </b>
+        <ul>
+            <li>Overall: @bestDayYesterday.username with @bestDayYesterday.situps situps, @bestDayYesterday.lunges lunges, @bestDayYesterday.burpees burpees and @bestDayYesterday.miles miles, for @controllers.handlers.PercentageCalculator.calculateOverallPercentComplete(bestDayYesterday)%
+            <li>SitUps: @bestSitUpsYesterday.username with @bestSitUpsYesterday.situps</li>
+            <li>Lunges:  @bestLungesYesterday.username with @bestLungesYesterday.lunges </li>
+            <li>Burpees: @bestBurpeesYesterday.username with @bestBurpeesYesterday.burpees </li>
+            <li>Miles @bestMilesYesterday.username with @bestMilesYesterday.miles </li>
+        </ul>
     </div>
 }
