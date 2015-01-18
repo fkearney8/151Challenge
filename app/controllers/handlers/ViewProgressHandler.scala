@@ -1,7 +1,7 @@
 package controllers.handlers
 
-import java.text.SimpleDateFormat
-import java.util.Calendar
+import OneFiveOneUtils._
+import java.util.{TimeZone, Calendar}
 
 import models._
 import play.api.Logger
@@ -49,7 +49,7 @@ object ViewProgressHandler {
   }
 
   /**
-   * Gets a map of days to a map of user -> totals for that day.
+   * Gets a map of days to a map of user -> totals for that day, starting from the beginning of the challenge.
    */
   def totalsPerDayPerUser(): List[(Calendar, List[UserAggregateExercises])] = {
     //from the start of the challenge until today
@@ -62,6 +62,7 @@ object ViewProgressHandler {
       val entriesForDay = allEntries.filter{ eachEntry: ExerciseEntry =>
         wasEntryOnDay(eachEntry, eachDay)
       }
+      Logger.debug("Entries for day " + printableDate(eachDay) + "(" + eachDay.getTimeInMillis + ")" + " are " + entriesForDay.map(entry => printableDate(entry.when) + "(" + entry.when.getTimeInMillis + ")"))
       //for each user sum up their entries for this day
       val userToDailyTotals = for (eachUser <- allUsers) yield {
         val entriesForUser = entriesForDay.filter(exerciseEntry => exerciseEntry.userId == eachUser.id)
@@ -76,11 +77,11 @@ object ViewProgressHandler {
   def bestDayYesterday(): UserAggregateExercises = {
     val totalsPerDay = totalsPerDayPerUser()
 
-//    totalsPerDay.foreach { calAndTotals =>
-//      Logger.debug("\n\nFor date: " + printableDate(calAndTotals._1))
-//      val userTotalsForDay = calAndTotals._2
-//      userTotalsForDay.foreach(eachTotal => Logger.debug("\t" + eachTotal))
-//    }
+    totalsPerDay.foreach { calAndTotals =>
+      Logger.debug("\n\nFor date: " + printableDate(calAndTotals._1))
+      val userTotalsForDay = calAndTotals._2
+      userTotalsForDay.foreach(eachTotal => Logger.debug("\t" + eachTotal))
+    }
 
     val yesterdaysEntries = totalsPerDayPerUser().find(dailyEntries => isGivenTimeWithinDay(dailyEntries._1, getYesterday()))
     yesterdaysEntries match {
@@ -113,14 +114,12 @@ object ViewProgressHandler {
   }
 
   def getYesterday(): Calendar = {
+    //calculate yesterday based on PST, so that our west coasters see yesterday making sense after 9pm
     val yesterday = Calendar.getInstance()
+    OneFiveOneUtils.roundToDay(yesterday)
     yesterday.roll(Calendar.DAY_OF_YEAR, -1)
-    OneFiveOneConstants.roundToDay(yesterday)
+    Logger.debug("Yesterday is " + printableDate(yesterday) + " or more fully: " + yesterday)
     yesterday
-  }
-
-  implicit def printableDate(calendar: Calendar): String = {
-    new SimpleDateFormat("MM/dd/yyyy").format(calendar.getTime)
   }
 
   private def fromStartToYesterday(): Seq[Calendar] = {
@@ -131,9 +130,7 @@ object ViewProgressHandler {
     var output = List.empty[Calendar]
     while (currentDay.compareTo(yesterday) <= 0) {
       output = output :+ currentDay
-      currentDay = {
-        nextDay(currentDay)
-      }
+      currentDay = nextDay(currentDay)
     }
     Logger.debug("\n\nUsing days:\n" + output.map(printableDate(_) + "\n"))
 

@@ -1,7 +1,7 @@
 package controllers.handlers
 
 import java.util.Calendar
-
+import OneFiveOneUtils._
 import models.ExerciseType
 
 object OneFiveOneConstants {
@@ -18,13 +18,6 @@ object OneFiveOneConstants {
     startOfChallenge.set(Calendar.DAY_OF_MONTH, 12)
     roundToDay(startOfChallenge)
     startOfChallenge
-  }
-
-  def roundToDay(calendar: Calendar) {
-    calendar.set(Calendar.HOUR, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
   }
 
   def exerciseTypeToTotalsMap(): Map[ExerciseType.Value, Int] = {
