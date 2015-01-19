@@ -2,7 +2,7 @@ package forms
 
 import java.util.{Calendar, Date}
 
-import controllers.handlers.{ViewProgressHandler, OneFiveOneConstants}
+import controllers.handlers.{AggregateDataHandler, OneFiveOneConstants}
 import models.{ExerciseType, ExerciseEntry}
 import play.api.Logger
 import play.api.data.Forms._

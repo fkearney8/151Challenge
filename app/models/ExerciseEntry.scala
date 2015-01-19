@@ -3,7 +3,7 @@ package models
 import java.sql.{Date => SqlDate}
 import java.util.Calendar
 
-import controllers.handlers.OneFiveOneUtils
+import controllers.handlers.{OneFiveOneDateUtils, OneFiveOneUtils}
 import play.api.Logger
 
 import scala.slick.driver.PostgresDriver.simple._
@@ -19,7 +19,7 @@ case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double
           //dates stored in the DB are at midnight in the local timezone (UTC on the deployed host)
           // These would become a day earlier compared to epoch in PST
           // The dates we compare against are at noon. This happens because we round off the hours.
-          OneFiveOneUtils.roundToDay(entryCal)
+          OneFiveOneDateUtils.roundToDay(entryCal)
           entryCal
         },
       row._5, row._6)

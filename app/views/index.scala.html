@@ -1,4 +1,7 @@
+
 @()(implicit request: RequestHeader)
+@import controllers.handlers.AggregateDataHandler
+@import controllers.handlers.OneFiveOneDateUtils
 
 @main("151 Challenge") {
   <h1> Welcome to the 151 Challenge </h1>
@@ -17,6 +20,20 @@
     Then when all that is done, drink a shot of Bacardi 151 and take a picture to mark the occasion.
     We have started on 2015/01/12 at 12:00am.
   </p>
+  <h3>How are we doing?</h3>
+  <p>
+    @defining(AggregateDataHandler.everyoneToday()) { everyoneToday =>
+      Today (PST) we did @everyoneToday.sitUps sitUps, @everyoneToday.lunges lunges, @everyoneToday.burpees, and @everyoneToday.miles miles.
+    }
+    <br/>
+    @defining(AggregateDataHandler.everyoneBestDay()) { everyoneBestDay =>
+      Our best day was @OneFiveOneDateUtils.printableDate(everyoneBestDay._1) when we did @everyoneBestDay._2.sitUps situps,
+      @everyoneBestDay._2.lunges lunges, @everyoneBestDay._2.burpees burpees and @everyoneBestDay._2.miles miles.
+    }
+    <br/>
+    See the <a href="/leaderboard">Leaderboard</a> page for more stats.
+  </p>
+  <h3>More Info</h3>
   <p>
     You can join the <a href="https://groupme.com/join_group/11720972/BwiYla">Group Me</a> chat for all the contestants
     to ask questions, stay up to date and talk trash. If you've already joined, you can <a href="https://app.groupme.com/chats">go there now.</a>

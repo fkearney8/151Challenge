@@ -1,7 +1,7 @@
 package controllers.handlers
 
-import java.util.Calendar
-import OneFiveOneUtils._
+import java.util.{TimeZone, Calendar}
+import OneFiveOneDateUtils._
 import models.ExerciseType
 
 object OneFiveOneConstants {

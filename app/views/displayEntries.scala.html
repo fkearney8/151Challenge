@@ -1,5 +1,5 @@
 @(userExerciseEntries: List[ExerciseEntry])(implicit request: RequestHeader)
-@import controllers.handlers.OneFiveOneUtils
+@import controllers.handlers.OneFiveOneDateUtils
 @main("151 Challenge") {
 
     <h2>Entries for user: @utils.authentication.UserAuthenticator.getAuthenticatedUsername(request)</h2>
@@ -16,7 +16,7 @@
         <tr>
             <td>@eachEntry.exerciseType</td>
             <td>@eachEntry.reps</td>
-            <td>@OneFiveOneUtils.printableDate(eachEntry.when)</td>
+            <td>@OneFiveOneDateUtils.printableDate(eachEntry.when)</td>
             <td>@eachEntry.comment</td>
         </tr>
     }

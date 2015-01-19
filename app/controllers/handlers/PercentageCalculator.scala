@@ -7,8 +7,8 @@ object PercentageCalculator {
   /** Given an aggregate of user exercises, determine how much of a completion percentage was done for that aggregate of exercise counts.
     *
     * Note these percentages are already normalized to 0-100 values rather than 0-1*/
-  def calculateOverallPercentComplete(aggregateExercises: UserAggregateExercises): Double= {
-    val totalPercentages = (sitUpsPercentComplete(aggregateExercises.situps)
+  def calculateOverallPercentComplete(aggregateExercises: AggregateExercises): Double= {
+    val totalPercentages = (sitUpsPercentComplete(aggregateExercises.sitUps)
         + lungesPercentComplete(aggregateExercises.lunges)
         + burpeesPercentComplete(aggregateExercises.burpees)
         + milesPercentComplete(aggregateExercises.miles))

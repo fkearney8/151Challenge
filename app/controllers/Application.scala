@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.handlers.{OneFiveOneUtils, ViewProgressHandler, AddExerciseHandler}
+import controllers.handlers.{OneFiveOneDateUtils, AggregateDataHandler, AddExerciseHandler}
 import forms.ExerciseEntriesForm
 import models.ExerciseEntries
 import play.api.Logger
@@ -23,11 +23,7 @@ object Application extends BaseController {
   }
 
   def leaderboard = isAuthenticated { username => implicit request =>
-    val eachUserTotalsWPercentages = ViewProgressHandler.eachUserTotalsWithPercentages()
-    Ok(views.html.leaderboard(eachUserTotalsWPercentages, OneFiveOneUtils.printableDate(ViewProgressHandler.getYesterday),
-        ViewProgressHandler.bestProgressYesterday(),
-        ViewProgressHandler.bestSitUpsYesterday(), ViewProgressHandler.bestLungesYesterday(), ViewProgressHandler.bestBurpeesYesterday(),
-        ViewProgressHandler.bestMilesYesterday()))
+    Ok(views.html.leaderboard())
   }
 
   def addExerciseEntry() = isAuthenticated { username => implicit request =>
