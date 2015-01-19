@@ -3,18 +3,15 @@ html, body {
 }
 
 div.leftMenu {
-    width: 18%;
+    width: 17%;
     height: 100%;
-    position: fixed;
-    border-right:  solid 1px;
+    float: left;
 }
 
 
 div.mainSection {
-    margin-left: 20px;
-
-    width: 65%;
+    float: right;
+    padding-left: 5%;
+    width: 77%;
     height: 100%;
-    position: absolute;
-    left: 20%;
 }
