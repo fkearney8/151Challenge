@@ -3,24 +3,64 @@
 @main("Record Progress") {
     <script>
         $(function() {
-            $( "#datepicker" ).datepicker({
+            var $datepicker = $("#datepicker");
+            $datepicker.datepicker({
                 dateFormat: "yy-mm-dd"
             });
+            var today = new Date();
+            var yyyy = today.getFullYear();
+            var mm = (today.getMonth() + 1);
+            if(mm<10) mm = '0'+mm;
+            var dd = today.getDate();
+            if(dd<10) dd = '0'+dd;
+
+            $datepicker.val(yyyy + "-" + mm + "-" + dd);
         });
     </script>
 
-    This is the page to record stuff
-    Exercise Reps Date
+    <h2>Record your workout</h2>
 
     @helper.form(action = routes.Application.addExerciseEntry()) {
-        @helper.select(exerciseEntryForm("exerciseType"),
-            ExerciseType.values.map{
-                exType => (exType.toString, exType.toString)
-            }.toSeq
-        )
-        @helper.inputText(exerciseEntryForm("reps"))
-        @helper.inputDate(exerciseEntryForm("when"), 'id ->"datepicker")
-        @helper.inputText(exerciseEntryForm("comment"))
-        <input type="submit"/>
+
+        <table>
+            <tr>
+                <td>
+                    <label>Exercise Type:</label>
+                </td>
+                <td>
+                    <select id="exerciseType" name="exerciseType">
+                    @ExerciseType.values.map{exType =>
+                        <option value="@exType.toString">@exType.toString</option>
+                    }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>How many Reps:</label>
+                </td>
+                <td>
+                    <input id="reps" type="text" value="" name="reps">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>When you did it:</label>
+                </td>
+                <td>
+                    <input id="datepicker" type="date" value="" name="when">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Comments?:</label>
+                </td>
+                <td>
+                    <input id="comment" type="text" value="" name="comment">
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit">Record Excercise Done</button>
     }
 }

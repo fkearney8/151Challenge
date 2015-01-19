@@ -62,7 +62,6 @@ object ViewProgressHandler {
       val entriesForDay = allEntries.filter{ eachEntry: ExerciseEntry =>
         wasEntryOnDay(eachEntry, eachDay)
       }
-      Logger.debug("Entries for day " + printableDate(eachDay) + "(" + eachDay.getTimeInMillis + ")" + " are " + entriesForDay.map(entry => printableDate(entry.when) + "(" + entry.when.getTimeInMillis + ")"))
       //for each user sum up their entries for this day
       val userToDailyTotals = for (eachUser <- allUsers) yield {
         val entriesForUser = entriesForDay.filter(exerciseEntry => exerciseEntry.userId == eachUser.id)
@@ -153,7 +152,6 @@ object ViewProgressHandler {
       output = output :+ currentDay
       currentDay = nextDay(currentDay)
     }
-    Logger.debug("\n\nUsing days:\n" + output.map(printableDate(_) + "\n"))
 
     output
   }

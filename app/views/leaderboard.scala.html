@@ -1,4 +1,5 @@
 @(userTotals: List[(controllers.handlers.UserAggregateExercises, controllers.handlers.PercentagesCompleted)],
+        yesterdayString: String,
         bestDayYesterday: controllers.handlers.UserAggregateExercises,
         bestSitUpsYesterday: controllers.handlers.UserAggregateExercises,
         bestLungesYesterday: controllers.handlers.UserAggregateExercises,
@@ -25,7 +26,7 @@
 
     <div style="padding-top: 20px">
 
-        <b>The best scores yesterday were: </b>
+        <b>The best scores yesterday @yesterdayString (based on PST) were: </b>
         <ul>
             <li>Overall: @bestDayYesterday.username with @bestDayYesterday.situps situps, @bestDayYesterday.lunges lunges, @bestDayYesterday.burpees burpees and @bestDayYesterday.miles miles, for @controllers.handlers.PercentageCalculator.calculateOverallPercentComplete(bestDayYesterday)%
             <li>SitUps: @bestSitUpsYesterday.username with @bestSitUpsYesterday.situps</li>
