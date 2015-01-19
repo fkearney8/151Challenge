@@ -1,0 +1,20 @@
+html, body {
+    font-size: 18px;
+}
+
+div.leftMenu {
+    width: 18%;
+    height: 100%;
+    position: fixed;
+    border-right:  solid 1px;
+}
+
+
+div.mainSection {
+    margin-left: 20px;
+
+    width: 65%;
+    height: 100%;
+    position: absolute;
+    left: 20%;
+}
