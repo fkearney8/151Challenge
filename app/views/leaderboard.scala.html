@@ -6,7 +6,7 @@
 
 @main("Progress") {
 
-    <h3>Leader Board</h3>
+    <h1>Leader Board</h1>
 
     <table class="standard">
         <tr><th>151er</th><th>Sit Ups</th><th>Lunges</th><th>Burpees</th><th>Miles</th><th>Overall Completion</th></tr>
@@ -22,7 +22,7 @@
                 </tr>
             }
         }
-        <tr style="padding-top: 10px; font-style: italic">
+        <tr style="padding-top: 10px; font-weight: 500;color: #DB1B1B;">
             <td>TOTAL</td>
             @defining(AggregateDataHandler.everyoneTotalsForAllDays()){ everyoneTotals =>
                 <td>@everyoneTotals.sitUps</td>
@@ -35,9 +35,9 @@
     </table>
 
 
-    <div style="padding-top: 20px">
+    <div>
         @defining(printableDate(getYesterday)) { yesterdayString =>
-            <b>The best scores yesterday @yesterdayString (based on PST) were: </b>
+            <h3>The best scores yesterday @yesterdayString (based on PST) were: </h3>
         }
         <ul>
             @defining(AggregateDataHandler.bestOverallProgressYesterday()) { bestDayYesterday =>
@@ -59,7 +59,7 @@
     </div>
 
     <div>
-        <b>The best days for the whole challenge where: </b>
+        <h3>The best days for the whole challenge where: </h3>
         <ul>
             <li>
                 @defining(AggregateDataHandler.bestOverallProgressAnyDay()) { bestOverallDay =>
