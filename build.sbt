@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "com.typesafe.slick" %% "slick" % "2.1.0",
-  "org.postgresql" % "postgresql" % "9.3-1102-jdbc4"
+  "org.postgresql" % "postgresql" % "9.3-1102-jdbc4",
+  "org.scalaj" %% "scalaj-http" % "1.1.0"
 )

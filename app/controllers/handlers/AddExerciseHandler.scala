@@ -4,12 +4,15 @@ import java.util.Calendar
 
 import controllers.Application._
 import forms.{ExerciseEntriesForm, ExerciseEntryFormInput}
-import models.{ExerciseEntries, ExerciseEntry}
+import models.{ExerciseEntries, ExerciseEntry, Users}
 import play.api.data.{Form, FormError}
 import play.api.mvc.{AnyContent, Request, Result}
 import utils.authentication.UserAuthenticator
+import utils.groupme.Bot
 
 object AddExerciseHandler {
+  lazy val bot = new Bot(sys.env("GROUPME_BOT_ID"), sys.env("GROUPME_URL"))
+
   def addExerciseEntry(implicit request: Request[AnyContent]): Result = {
     val formInfo: Form[ExerciseEntryFormInput] = ExerciseEntriesForm.exerciseEntryForm.bindFromRequest()
     if (formInfo.errors.nonEmpty) {
@@ -34,10 +37,24 @@ object AddExerciseHandler {
           val errorString = ExerciseEntriesForm.validateEntry(exerciseEntry)
           errorString.fold {
             ExerciseEntries.add(exerciseEntry)
+            notify(exerciseEntry)
             Redirect("/displayEntries")
           }(BadRequest(_))
         }
       }
+    }
+  }
+
+  def notify(exercise: ExerciseEntry) {
+    val user = Users.findById(exercise.userId)
+    user match {
+      case Some(user) => {
+        val username = user.username
+        val reps = exercise.reps
+        val exerciseType = exercise.exerciseType
+        bot.post(s"$username recorded $reps $exerciseType")
+      }
+      case None => {}
     }
   }
 

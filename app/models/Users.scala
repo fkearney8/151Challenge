@@ -60,6 +60,10 @@ object Users {
     findSingleUser { user => user.email === email }
   }
 
+  def findById(id: Int): Option[User] = {
+    findSingleUser { user => user.id === id }
+  }
+
   def findByUsername(username: String): Option[User] = {
     findSingleUser { user => user.username === username }
   }
