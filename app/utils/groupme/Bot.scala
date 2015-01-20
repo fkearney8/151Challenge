@@ -1,8 +1,10 @@
 package utils.groupme
 
 import play.api.Logger
+import play.api.Play.current
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.{Json,JsValue}
-import scalaj.http._
+import play.api.libs.ws.WS
 
 class Bot(idc: String, urlc: String) {
   var id: String = idc
@@ -10,9 +12,10 @@ class Bot(idc: String, urlc: String) {
 
   def post(text: String) = {
     val data: JsValue = Json.obj("bot_id" -> id, "text" -> text)
-    val response = Http(url).postData(Json.stringify(data)).asString
-    if (response.isError) {
-      // Do stuff
+    WS.url(url).post(data).map {
+      case response => {
+        // Log if response.status is not 2xx?
+      }
     }
   }
 }
