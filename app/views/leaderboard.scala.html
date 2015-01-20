@@ -53,7 +53,7 @@
                 <li>Burpees: @bestBurpeesYesterday.username with @bestBurpeesYesterday.burpees </li>
             }
             @defining(AggregateDataHandler.bestMilesYesterday()) { bestMilesYesterday =>
-                <li>Miles @bestMilesYesterday.username with @bestMilesYesterday.miles </li>
+                <li>Miles: @bestMilesYesterday.username with @bestMilesYesterday.miles </li>
             }
         </ul>
     </div>
@@ -63,28 +63,28 @@
         <ul>
             <li>
                 @defining(AggregateDataHandler.bestOverallProgressAnyDay()) { bestOverallDay =>
-                    Best overall day way @bestOverallDay._2.username on @printableDate(bestOverallDay._1) with
+                    Best overall day: @bestOverallDay._2.username on @printableDate(bestOverallDay._1) with
                     @bestOverallDay._2.sitUps situps, @bestOverallDay._2.lunges lunges, @bestOverallDay._2.burpees burpees and @bestOverallDay._2.miles miles, for @PercentageCalculator.calculateOverallPercentComplete(bestOverallDay._2)%
                 }
             </li>
             <li>
                 @defining(AggregateDataHandler.bestSitUpsAnyDay()) { bestSitups =>
-                    Best situps was @bestSitups._2.username on @printableDate(bestSitups._1) with @bestSitups._2.sitUps
+                    Best situps: @bestSitups._2.username on @printableDate(bestSitups._1) with @bestSitups._2.sitUps
                 }
             </li>
             <li>
                 @defining(AggregateDataHandler.bestLungesAnyDay()) { bestLunges =>
-                    Best lunges was @bestLunges._2.username on @printableDate(bestLunges._1) with @bestLunges._2.lunges
+                    Best lunges: @bestLunges._2.username on @printableDate(bestLunges._1) with @bestLunges._2.lunges
                 }
             </li>
             <li>
                 @defining(AggregateDataHandler.bestBurpeesAnyDay()) { bestBurpees =>
-                    Best burpees was @bestBurpees._2.username on @printableDate(bestBurpees._1) with @bestBurpees._2.burpees
+                    Best burpees: @bestBurpees._2.username on @printableDate(bestBurpees._1) with @bestBurpees._2.burpees
                 }
             </li>
             <li>
                 @defining(AggregateDataHandler.bestMilesAnyDay()) { bestMiles =>
-                    Best miles was @bestMiles._2.username on @printableDate(bestMiles._1) with @bestMiles._2.miles
+                    Best miles: @bestMiles._2.username on @printableDate(bestMiles._1) with @bestMiles._2.miles
                 }
             </li>
         </ul>

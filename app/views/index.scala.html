@@ -2,6 +2,7 @@
 @()(implicit request: RequestHeader)
 @import controllers.handlers.AggregateDataHandler
 @import controllers.handlers.OneFiveOneDateUtils
+@import controllers.handlers.OneFiveOneConstants
 
 @main("151 Challenge") {
   <h1> Welcome to the 151 Challenge </h1>
@@ -18,12 +19,12 @@
   </p>
   <p>
     Then when all that is done, drink a shot of Bacardi 151 and take a picture to mark the occasion.
-    We have started on 2015/01/12 at 12:00am.
+    We have started on @OneFiveOneDateUtils.printableDate(OneFiveOneConstants.START_OF_CHALLENGE) at 12:00am.
   </p>
   <h3>How are we doing?</h3>
   <p>
     @defining(AggregateDataHandler.everyoneToday()) { everyoneToday =>
-      Today (PST) we did @everyoneToday.sitUps sitUps, @everyoneToday.lunges lunges, @everyoneToday.burpees, and @everyoneToday.miles miles.
+      Today (PST) we did @everyoneToday.sitUps sitUps, @everyoneToday.lunges lunges, @everyoneToday.burpees burpees and @everyoneToday.miles miles.
     }
     <br/>
     @defining(AggregateDataHandler.everyoneBestDay()) { everyoneBestDay =>

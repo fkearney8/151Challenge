@@ -28,25 +28,24 @@ object OneFiveOneDateUtils {
 
   def getYesterday: Calendar = {
     //calculate yesterday based on PST, so that our west coasters see yesterday making sense after 4pm when UTC flips over.
-    val yesterdayPT = getToday
-    roundToDay(yesterdayPT)
-    yesterdayPT.roll(Calendar.DAY_OF_YEAR, -1)
-
-    //create a 'yesterday' in the default TZ, (which will be UTC on the production host, but this will work regardless of what it is)
-    // and set the year, month, and day for the pacific time's yesterday onto it. We have to do this because we want to be
-    // looking for exercises that are marked as entered at 12:00am on yesterday in the default time zone of the remote host, but we
-    // want to think of yesterday as the day before today in pacific time.
-    val yesterdayDefaultTZ = Calendar.getInstance()
-    yesterdayDefaultTZ.set(Calendar.YEAR, yesterdayPT.get(Calendar.YEAR))
-    yesterdayDefaultTZ.set(Calendar.MONTH, yesterdayPT.get(Calendar.MONTH))
-    yesterdayDefaultTZ.set(Calendar.DAY_OF_YEAR, yesterdayPT.get(Calendar.DAY_OF_YEAR))
-    roundToDay(yesterdayDefaultTZ)
-
-    yesterdayDefaultTZ
+    val yesterday = getToday
+    yesterday.roll(Calendar.DAY_OF_YEAR, -1)
+    yesterday
   }
 
   def getToday: Calendar = {
-    Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+    val today = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+    roundToDay(today)
+
+    //create a 'today' in the default TZ, (which will be UTC on the production host, but this will work regardless of what it is)
+    // and set the year, month, and day for the pacific time's today onto it. We have to do this because we want to be
+    // looking for exercises that are marked as entered at 12:00am on yesterday in the default time zone of the remote host, but we
+    // want to think of the current day in pacific time.
+    val todayDefaultTz = Calendar.getInstance()
+    todayDefaultTz.set(Calendar.YEAR, today.get(Calendar.YEAR))
+    todayDefaultTz.set(Calendar.MONTH, today.get(Calendar.MONTH))
+    todayDefaultTz.set(Calendar.DAY_OF_YEAR, today.get(Calendar.DAY_OF_YEAR))
+    roundToDay(todayDefaultTz)
   }
 
   def wasEntryOnDay(eachEntry: ExerciseEntry, dayInQuestion: Calendar): Boolean = {

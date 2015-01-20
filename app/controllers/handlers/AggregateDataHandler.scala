@@ -85,9 +85,11 @@ object AggregateDataHandler {
       case Some((day: Calendar, dayEntries: List[UserAggregateExercises])) =>
         bestProgressOf(dayEntries, sorterLt)
       case None =>
-        UserAggregateExercises(-1, "No One", 0, 0, 0, 0)
+        NoOneTotal
     }
   }
+
+  private val NoOneTotal: UserAggregateExercises = UserAggregateExercises(-1, "No One", 0, 0, 0, 0)
 
   private def bestProgressOf(entries: List[UserAggregateExercises],
                              sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean): UserAggregateExercises = {      
@@ -133,8 +135,14 @@ object AggregateDataHandler {
 
   def everyoneToday(): AnonymousAggregateExercises = {
     val userTotals = totalsPerDayPerUser()
-    val todayTotals = userTotals.last._2
-    sumUserTotals(todayTotals)
+    val todayTotals = userTotals.find(dailyEntries => isGivenTimeWithinDay(dailyEntries._1, getToday))
+    todayTotals match {
+      case Some((day: Calendar, todayUserAggregates: List[UserAggregateExercises])) =>
+        sumUserTotals(todayUserAggregates)
+      case None =>
+        sumUserTotals(List())
+    }
+
   }
 
 
