@@ -5,13 +5,15 @@ import java.util.Calendar
 import controllers.Application._
 import forms.{ExerciseEntriesForm, ExerciseEntryFormInput}
 import models.{ExerciseEntries, ExerciseEntry, Users}
+import play.api.Logger
 import play.api.data.{Form, FormError}
 import play.api.mvc.{AnyContent, Request, Result}
 import utils.authentication.UserAuthenticator
 import utils.groupme.Bot
 
 object AddExerciseHandler {
-  lazy val bot = new Bot(sys.env("GROUPME_BOT_ID"), sys.env("GROUPME_URL"))
+  //TODO this could make nice use of a dependency injection framework for use in tests... say just log it to the console if we get the test bot
+  lazy val bot = new Bot(sys.env.get("GROUPME_BOT_ID"), sys.env.get("GROUPME_URL"))
 
   def addExerciseEntry(implicit request: Request[AnyContent]): Result = {
     val formInfo: Form[ExerciseEntryFormInput] = ExerciseEntriesForm.exerciseEntryForm.bindFromRequest()
@@ -48,13 +50,13 @@ object AddExerciseHandler {
   def notify(exercise: ExerciseEntry) {
     val user = Users.findById(exercise.userId)
     user match {
-      case Some(user) => {
-        val username = user.username
+      case Some(userActual) => {
+        val username = userActual.username
         val reps = exercise.reps
         val exerciseType = exercise.exerciseType
-        bot.post(s"$username recorded $reps $exerciseType")
+        bot.post(s"$username recorded $reps $exerciseType\n${exercise.comment}")
       }
-      case None => {}
+      case None => Logger.error(s"No user for exercise entered: $exercise")
     }
   }
 
