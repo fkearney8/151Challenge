@@ -29,7 +29,7 @@
                 </td>
                 <td>
                     <select id="exerciseType" name="exerciseType">
-                    @ExerciseType.values.map{exType =>
+                    @ExerciseType.values.toList.sorted.map{exType =>
                         <option value="@exType.toString">@exType.toString</option>
                     }
                     </select>
