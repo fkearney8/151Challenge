@@ -14,7 +14,7 @@ rm -fr ~/151Challenge/151challenge-1.0-SNAPSHOT
 unzip ~/151Challenge/151challenge-1.0-SNAPSHOT.zip -d ~/151Challenge
 
 #start 'er up
-~/151Challenge/151challenge-1.0-SNAPSHOT/bin/151challenge -Dhttp.port=8080 &
+~/151Challenge/startup.sh
 
 sleep 5s
 echo "\n\nHit ctrl-c if everything looks good"
