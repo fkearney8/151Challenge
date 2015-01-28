@@ -1,0 +1,36 @@
+@(userStats: UserStats)(implicit request: RequestHeader)
+
+@import controllers.handlers.OneFiveOneDateUtils.printableDate
+@import controllers.handlers.PercentageCalculator
+@main("151er stats for " + userStats.user.username) {
+    <h1>@userStats.user.username Stats</h1>
+    <ul>
+        <li>
+            @defining(userStats.bestOverallProgressAnyDay()) { bestOverall =>
+                Best overall day: @printableDate(bestOverall._1) with @bestOverall._2.sitUps situps, @bestOverall._2.lunges lunges,
+                @bestOverall._2.burpees burpees, and @bestOverall._2.miles miles
+                for overall completion of @PercentageCalculator.calculateOverallPercentComplete(bestOverall._2)%
+            }
+        </li>
+        <li>
+            @defining(userStats.bestSitUpsAnyDay()) { bestSitups =>
+                Best situps day: @printableDate(bestSitups._1) with @bestSitups._2.sitUps
+            }
+        </li>
+        <li>
+            @defining(userStats.bestLungesAnyDay()) { bestLunges =>
+                Best lunges day: @printableDate(bestLunges._1) with @bestLunges._2.lunges
+            }
+        </li>
+        <li>
+            @defining(userStats.bestBurpeesAnyDay()) { bestBurpees =>
+                Best burpees day: @printableDate(bestBurpees._1) with @bestBurpees._2.burpees
+            }
+        </li>
+        <li>
+            @defining(userStats.bestMilesAnyDay()) { bestMiles =>
+                Best miles day: @printableDate(bestMiles._1) with @bestMiles._2.miles
+            }
+        </li>
+    </ul>
+}

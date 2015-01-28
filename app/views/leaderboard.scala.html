@@ -13,7 +13,7 @@
         @defining(AggregateDataHandler.eachUserTotalsWithPercentages()) { userTotals =>
             @userTotals.map { case (userTotal, percentagesCompleted) =>
                 <tr>
-                    <td>@userTotal.username</td>
+                    <td><a href="/151er/@userTotal.userId">@userTotal.username</a></td>
                     <td>@userTotal.sitUps (@percentagesCompleted.sitUpsPercent%)</td>
                     <td>@userTotal.lunges (@percentagesCompleted.lungesPercent%)</td>
                     <td>@userTotal.burpees (@percentagesCompleted.burpeesPercent%)</td>

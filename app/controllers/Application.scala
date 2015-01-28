@@ -2,7 +2,7 @@ package controllers
 
 import controllers.handlers.{OneFiveOneDateUtils, AggregateDataHandler, AddExerciseHandler}
 import forms.ExerciseEntriesForm
-import models.ExerciseEntries
+import models.{UserStats, ExerciseEntries}
 import play.api.Logger
 import play.api.mvc._
 import utils.authentication._
@@ -32,5 +32,10 @@ object Application extends BaseController {
 
   def visualizations() = Action { implicit request =>
     Ok(views.html.visualizations())
+  }
+
+  def userPage(id: Int) = Action { implicit request =>
+    val userAggregateData = new UserStats(id)
+    Ok(views.html.userPage(userAggregateData))
   }
 }

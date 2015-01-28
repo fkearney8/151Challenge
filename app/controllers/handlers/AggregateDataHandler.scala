@@ -6,8 +6,12 @@ import controllers.handlers.OneFiveOneDateUtils._
 import models._
 import play.api.Logger
 
-object AggregateDataHandler {
+import scala.collection.immutable.SortedMap
 
+//TODO divide this object up into classes that know about how to handle a day's totals for all users, keep static methods in here for
+// finding the best of certain categories from lists of aggregate data.
+object AggregateDataHandler {
+  
   def eachUserTotals(): List[UserAggregateExercises] = {
     //retrieve each user
     val allUsers = Users.findAll
@@ -49,10 +53,10 @@ object AggregateDataHandler {
   }
 
   /**
-   * Gets a map of days to a map of user -> totals for that day, starting from the beginning of the challenge.
+   * Gets a map of days to a list of each user's totals for that day, starting from the beginning of the challenge.
    * Last entry in returned list will be today.
    */
-  def totalsPerDayPerUser(): List[(Calendar, List[UserAggregateExercises])] = {
+  def totalsPerDayPerUser(): SortedMap[Calendar, List[UserAggregateExercises]] = {
     //from the start of the challenge until today
     val eachDayFromStartToYesterday = fromStartToToday()
     val allEntries = ExerciseEntries.getAll()
@@ -69,9 +73,10 @@ object AggregateDataHandler {
         val userDailyTotal = sumEntries(entriesForUser)
         new UserAggregateExercises(eachUser, userDailyTotal)
       }
-      (eachDay, userToDailyTotals)
+      eachDay -> userToDailyTotals
     }
-    dailyEntryTotals.sortBy(calendarAndMap => calendarAndMap._1.getTimeInMillis).toList
+    val sortedDailyEntries = dailyEntryTotals.sortBy(calendarAndMap => calendarAndMap._1.getTimeInMillis)
+    SortedMap(sortedDailyEntries:_*)
   }
 
   /**
@@ -97,12 +102,12 @@ object AggregateDataHandler {
   }
   
 
-  /** Convenience method to create functions for finding the greater of two UserAggregateExercises based on the tranfotmation
+  /** Convenience method to create functions for finding the greater of two UserAggregateExercises based on the transformation
     * given.
     * @param uaeTransformation How to transform UAEs to compare them.
     * @return a function for use in a sortWith to compare UAEs
     */
-  private def findTheGreatestOf(uaeTransformation: (UserAggregateExercises => BigDecimal)): (UserAggregateExercises, UserAggregateExercises) => Boolean = {
+  def findTheGreatestOf(uaeTransformation: (UserAggregateExercises => BigDecimal)): (UserAggregateExercises, UserAggregateExercises) => Boolean = {
     case (uae1: UserAggregateExercises, uae2: UserAggregateExercises) =>
       uaeTransformation(uae1) > uaeTransformation(uae2)
   }
@@ -127,7 +132,7 @@ object AggregateDataHandler {
       case (day: Calendar, userTotals: List[UserAggregateExercises]) =>
         (day, sumUserTotals(userTotals))
     }
-    everyoneTotalsPerDay.sortBy{
+    everyoneTotalsPerDay.toList.sortBy{
       case (day: Calendar, totals: AnonymousAggregateExercises) =>
         -PercentageCalculator.calculateOverallPercentComplete(totals)
     }.head
@@ -166,8 +171,14 @@ object AggregateDataHandler {
       val bestOfDay = bestProgressOf(eachDayTotal._2, sorterLt)
       (eachDayTotal._1, bestOfDay)
     }
-    bestOfEachDay.sortWith{(calAndUae1: (Calendar, UserAggregateExercises), calAndUae2: (Calendar, UserAggregateExercises)) =>
-        sorterLt(calAndUae1._2, calAndUae2._2)}.head
+    bestDayOf(sorterLt, bestOfEachDay)
+  }
+
+  /** Find the best day of the days data given. 'Best' is defined as the first (least) UserAggregateData given the sorterLt. */
+  def bestDayOf(sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean, dailyTotals: SortedMap[Calendar, UserAggregateExercises]): (Calendar, UserAggregateExercises) = {
+    dailyTotals.toList.sortWith { (calAndUae1: (Calendar, UserAggregateExercises), calAndUae2: (Calendar, UserAggregateExercises)) =>
+      sorterLt(calAndUae1._2, calAndUae2._2)
+    }.head
   }
 
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)))
