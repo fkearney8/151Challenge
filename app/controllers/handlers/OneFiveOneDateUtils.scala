@@ -20,6 +20,10 @@ object OneFiveOneDateUtils {
     new SimpleDateFormat("MM/dd/yyyy").format(calendar.getTime)
   }
 
+  def printableDateShort(calendar: Calendar): String = {
+    new SimpleDateFormat("MM/dd").format(calendar.getTime)
+  }
+
   def nextDay(currentDay: Calendar): Calendar = {
     val nextDay: Calendar = Calendar.getInstance()
     nextDay.setTimeInMillis(currentDay.getTimeInMillis + 24 * 60 * 60 * 1000)

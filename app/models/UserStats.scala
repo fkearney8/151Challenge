@@ -3,16 +3,18 @@ package models
 import java.util.Calendar
 
 import controllers.handlers._
+import play.api.libs.json.{JsObject, JsValue, Json}
 
 import scala.collection.immutable.SortedMap
+
+import AggregateDataHelper.bestDayOf
+import AggregateDataHelper.findTheGreatestOf
 
 class UserStats(val id: Int) {
   val user = Users.findById(id).getOrElse(throw new BadRequestException("User " + id + " does not exist", null))
 
   val userDataPerDay = userDataByDay(id)
 
-  import AggregateDataHelper.bestDayOf
-  import AggregateDataHelper.findTheGreatestOf
 
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(
     findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)), userDataPerDay)
@@ -32,4 +34,18 @@ class UserStats(val id: Int) {
         thisUserTotalsList.headOption.map {userDailyTotal => day -> userDailyTotal}
     }
   }
+
+  def overallGraphJson: JsObject = {
+    val graphDays = userDataPerDay.map { case (day, totals) =>
+      OneFiveOneDateUtils.printableDateShort(day)
+    }
+    val graphData = userDataPerDay.map { case (day, totals) =>
+      PercentageCalculator.calculateOverallPercentComplete(totals)
+    }
+
+    Json.obj(
+      "days" -> Json.toJson(graphDays),
+      "data" -> Json.toJson(graphData))
+  }
+
 }

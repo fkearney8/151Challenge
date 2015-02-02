@@ -13,7 +13,7 @@ object Application extends BaseController {
   def index = Action { implicit request =>
     val everyoneTotalsLastWeek = EveryoneTotals.everyoneTotalsPerDay.takeRight(8).take(7)
     val recentDays = everyoneTotalsLastWeek.map { case (day, totals) =>
-      OneFiveOneDateUtils.printableDate(day)
+      OneFiveOneDateUtils.printableDateShort(day)
     }
     val recentData = everyoneTotalsLastWeek.map { case (day, totals) =>
       PercentageCalculator.calculateOverallPercentComplete(totals)
