@@ -96,15 +96,18 @@ object EveryoneTotals {
   }
 
   def everyoneBestDay(): (Calendar, AnonymousAggregateExercises) = {
-    val userTotalsPerDay = totalsPerDayPerUser()
-    val everyoneTotalsPerDay = userTotalsPerDay.map {
-      case (day: Calendar, userTotals: List[UserAggregateExercises]) =>
-        (day, sumUserTotals(userTotals))
-    }
-    everyoneTotalsPerDay.toList.sortBy{
+    everyoneTotalsPerDay.toList.sortBy {
       case (day: Calendar, totals: AnonymousAggregateExercises) =>
         -PercentageCalculator.calculateOverallPercentComplete(totals)
     }.head
+  }
+
+  def everyoneTotalsPerDay: SortedMap[Calendar, AnonymousAggregateExercises] = {
+    val userTotalsPerDay = totalsPerDayPerUser()
+    userTotalsPerDay.map {
+      case (day: Calendar, userTotals: List[UserAggregateExercises]) =>
+        (day, sumUserTotals(userTotals))
+    }
   }
 
   def everyoneToday(): AnonymousAggregateExercises = {

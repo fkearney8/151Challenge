@@ -1,5 +1,6 @@
+@(graphLabels: play.api.libs.json.JsValue, graphData: play.api.libs.json.JsValue)(implicit request: RequestHeader)
 
-@()(implicit request: RequestHeader)
+@import play.api.libs.json.Json
 @import controllers.handlers.EveryoneTotals
 @import controllers.handlers.OneFiveOneDateUtils
 @import controllers.handlers.OneFiveOneConstants
@@ -32,6 +33,7 @@
       @everyoneBestDay._2.lunges lunges, @everyoneBestDay._2.burpees burpees and @everyoneBestDay._2.miles miles.
     }
     <div>
+      Overall percentage completed by all of us, by day:<br/>
       <canvas id="everyoneLineChart" width="800" height="200"></canvas>
     </div>
     <br/>
@@ -64,5 +66,5 @@
   </p>
 
   <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
-  <script>createLineChart("#everyoneLineChart", ["1", "2", "3"], [10, 20, 15])</script>
+  <script>createLineChart("#everyoneLineChart", @Html(Json.stringify(graphLabels)), @Html(Json.stringify(graphData)));</script>
 }

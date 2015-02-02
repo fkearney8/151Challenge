@@ -29,6 +29,11 @@ h3 {
     -webkit-margin-before: 2em;
 }
 
+h4 {
+    font-weight: 700;
+    -webkit-margin-before: 2em;
+}
+
 ul {
     list-style-type: none;
     padding-left: 2em;
