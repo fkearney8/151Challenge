@@ -2,7 +2,7 @@ package models
 
 import java.util.Calendar
 
-import controllers.handlers.{BadRequestException, PercentageCalculator, UserAggregateExercises, AggregateDataHandler}
+import controllers.handlers._
 
 import scala.collection.immutable.SortedMap
 
@@ -11,8 +11,8 @@ class UserStats(val id: Int) {
 
   val userDataPerDay = userDataByDay(id)
 
-  import AggregateDataHandler.bestDayOf
-  import AggregateDataHandler.findTheGreatestOf
+  import AggregateDataHelper.bestDayOf
+  import AggregateDataHelper.findTheGreatestOf
 
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(
     findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)), userDataPerDay)
@@ -22,7 +22,7 @@ class UserStats(val id: Int) {
   def bestMilesAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.miles), userDataPerDay)
 
   private def userDataByDay(id: Int): SortedMap[Calendar, UserAggregateExercises] = {
-    val allUsers = AggregateDataHandler.totalsPerDayPerUser()
+    val allUsers = EveryoneTotals.totalsPerDayPerUser()
 
     allUsers.flatMap {
       case (day, allUsersTotalsList) =>

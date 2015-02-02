@@ -1,11 +1,19 @@
 @()(implicit request: RequestHeader)
 
 @main("Data visualizations") {
-    <div>
-        <canvas id="myChart" width="400" height="400"></canvas>
-    </div>
-
-    <div id="legend"></div>
-
     <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
+    @*<div>*@
+        @*<canvas id="barChart" width="400" height="400"></canvas>*@
+    @*</div>*@
+    @*<div id="legendBarChart"></div>*@
+
+
+    <div>
+        <canvas id="lineChart" width="1200" height="400"></canvas>
+    </div>
+    <div id="legendLineChart"></div>
+
+    <script>createLineChart("#lineChart", ["1", "2", "3"], [10, 20, 15])</script>
+
+
 }

@@ -1,6 +1,6 @@
 
 @()(implicit request: RequestHeader)
-@import controllers.handlers.AggregateDataHandler
+@import controllers.handlers.EveryoneTotals
 @import controllers.handlers.OneFiveOneDateUtils
 @import controllers.handlers.OneFiveOneConstants
 
@@ -23,14 +23,17 @@
   </p>
   <h3>How are we doing?</h3>
   <p>
-    @defining(AggregateDataHandler.everyoneToday()) { everyoneToday =>
+    @defining(EveryoneTotals.everyoneToday()) { everyoneToday =>
       Today (PST) so far we have done @everyoneToday.sitUps sitUps, @everyoneToday.lunges lunges, @everyoneToday.burpees burpees and @everyoneToday.miles miles.
     }
     <br/>
-    @defining(AggregateDataHandler.everyoneBestDay()) { everyoneBestDay =>
+    @defining(EveryoneTotals.everyoneBestDay()) { everyoneBestDay =>
       Our best day was @OneFiveOneDateUtils.printableDate(everyoneBestDay._1) when we did @everyoneBestDay._2.sitUps situps,
       @everyoneBestDay._2.lunges lunges, @everyoneBestDay._2.burpees burpees and @everyoneBestDay._2.miles miles.
     }
+    <div>
+      <canvas id="everyoneLineChart" width="800" height="200"></canvas>
+    </div>
     <br/>
     See the <a href="/leaderboard">Leaderboard</a> page for more stats.
   </p>
@@ -59,4 +62,7 @@
     is really extra walking or running, and not your day-to-day walking in the office or home that everyone does but will not track
     without a pedometer.
   </p>
+
+  <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
+  <script>createLineChart("#everyoneLineChart", ["1", "2", "3"], [10, 20, 15])</script>
 }

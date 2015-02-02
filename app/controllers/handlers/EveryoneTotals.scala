@@ -3,15 +3,13 @@ package controllers.handlers
 import java.util.Calendar
 
 import controllers.handlers.OneFiveOneDateUtils._
-import models._
-import play.api.Logger
+import models.{ExerciseEntry, ExerciseEntries, Users}
+import controllers.handlers.AggregateDataHelper._
 
 import scala.collection.immutable.SortedMap
 
-//TODO divide this object up into classes that know about how to handle a day's totals for all users, keep static methods in here for
-// finding the best of certain categories from lists of aggregate data.
-object AggregateDataHandler {
-  
+object EveryoneTotals {
+
   def eachUserTotals(): List[UserAggregateExercises] = {
     //retrieve each user
     val allUsers = Users.findAll
@@ -35,22 +33,9 @@ object AggregateDataHandler {
         calculateOverallPercentComplete(userTotal)
       )
       (userTotal, percentagesCompleted)
-    }.sortBy{overallPercentageOrdering}.reverse
+    }.sortBy{_._2.overallPercent}.reverse
   }
 
-  def overallPercentageOrdering(totalAndPercentages: (UserAggregateExercises, PercentagesCompleted)): BigDecimal = {
-    totalAndPercentages._2.overallPercent
-  }
-
-  def sumEntries(entriesToSum: List[ExerciseEntry]): AnonymousAggregateExercises = {
-    val totaledEntries = entriesToSum.foldLeft{Map.empty[ExerciseType.Value, BigDecimal]} {
-        (runningTotals: Map[ExerciseType.Value, BigDecimal], exerciseEntry: ExerciseEntry) => {
-      val exerciseType: ExerciseType.Value = exerciseEntry.exerciseType
-      val currentAmount = runningTotals.getOrElse(exerciseType, BigDecimal(0))
-      runningTotals + (exerciseType -> (currentAmount + exerciseEntry.reps))
-    }}
-    new AnonymousAggregateExercises(totaledEntries)
-  }
 
   /**
    * Gets a map of days to a list of each user's totals for that day, starting from the beginning of the challenge.
@@ -80,7 +65,7 @@ object AggregateDataHandler {
   }
 
   /**
-   *
+   * Find the best progress by someone on a given.
    * @param day the day on which to find the best entry
    * @param sorterLt A sorting order on the user totals to find the 'best' that you're looking for.
    */
@@ -95,22 +80,6 @@ object AggregateDataHandler {
   }
 
   private val NoOneTotal: UserAggregateExercises = UserAggregateExercises(-1, "No One", 0, 0, 0, 0)
-
-  private def bestProgressOf(entries: List[UserAggregateExercises],
-                             sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean): UserAggregateExercises = {      
-    entries.sortWith(sorterLt).head
-  }
-  
-
-  /** Convenience method to create functions for finding the greater of two UserAggregateExercises based on the transformation
-    * given.
-    * @param uaeTransformation How to transform UAEs to compare them.
-    * @return a function for use in a sortWith to compare UAEs
-    */
-  def findTheGreatestOf(uaeTransformation: (UserAggregateExercises => BigDecimal)): (UserAggregateExercises, UserAggregateExercises) => Boolean = {
-    case (uae1: UserAggregateExercises, uae2: UserAggregateExercises) =>
-      uaeTransformation(uae1) > uaeTransformation(uae2)
-  }
 
   def bestSitUpsYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.sitUps))
   def bestLungesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.lunges))
@@ -147,18 +116,6 @@ object AggregateDataHandler {
       case None =>
         sumUserTotals(List())
     }
-
-  }
-
-
-  private def sumUserTotals(userTotalsList: Seq[UserAggregateExercises]): AnonymousAggregateExercises = {
-    userTotalsList.foldLeft(new AnonymousAggregateExercises(0, 0, 0, 0.0)) {
-      (runningTotals: AnonymousAggregateExercises, userTotals: UserAggregateExercises) =>
-        new AnonymousAggregateExercises(runningTotals.sitUps + userTotals.sitUps,
-          runningTotals.lunges + userTotals.lunges,
-          runningTotals.burpees + userTotals.burpees,
-          runningTotals.miles + userTotals.miles)
-    }
   }
 
   /**
@@ -174,42 +131,10 @@ object AggregateDataHandler {
     bestDayOf(sorterLt, bestOfEachDay)
   }
 
-  /** Find the best day of the days data given. 'Best' is defined as the first (least) UserAggregateData given the sorterLt. */
-  def bestDayOf(sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean, dailyTotals: SortedMap[Calendar, UserAggregateExercises]): (Calendar, UserAggregateExercises) = {
-    dailyTotals.toList.sortWith { (calAndUae1: (Calendar, UserAggregateExercises), calAndUae2: (Calendar, UserAggregateExercises)) =>
-      sorterLt(calAndUae1._2, calAndUae2._2)
-    }.head
-  }
-
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)))
   def bestSitUpsAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.sitUps))
   def bestLungesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.lunges))
   def bestBurpeesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.burpees))
   def bestMilesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.miles))
+
 }
-
-case class UserAggregateExercises(userId: Int, username: String, sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal)
-  extends AggregateExercises {
-  def this(user: User, aggregateExercises: AnonymousAggregateExercises) {
-    this(user.id, user.username, aggregateExercises.sitUps, aggregateExercises.lunges, aggregateExercises.burpees, aggregateExercises.miles)
-  }
-}
-
-case class AnonymousAggregateExercises(sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal) extends AggregateExercises {
-  def this(totalsMap: Map[ExerciseType.Value, BigDecimal]) {
-    this(totalsMap.getOrElse(ExerciseType.SitUps, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Lunges, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Burpees, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Miles, BigDecimal(0)))
-  }
-}
-
-trait AggregateExercises {
-  def sitUps: Int
-  def lunges: Int
-  def burpees: Int
-  def miles: BigDecimal
-}
-
-case class PercentagesCompleted(sitUpsPercent: BigDecimal, lungesPercent: BigDecimal, burpeesPercent: BigDecimal, milesPercent: BigDecimal, overallPercent: BigDecimal)
-

@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.handlers.{OneFiveOneDateUtils, AggregateDataHandler, AddExerciseHandler}
+import controllers.handlers.{OneFiveOneDateUtils, AggregateDataHelper, AddExerciseHandler}
 import forms.ExerciseEntriesForm
 import models.{UserStats, ExerciseEntries}
 import play.api.Logger
