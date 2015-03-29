@@ -3,8 +3,7 @@ package models
 import java.sql.{Date => SqlDate}
 import java.util.Calendar
 
-import controllers.handlers.{OneFiveOneDateUtils, OneFiveOneUtils}
-import play.api.Logger
+import controllers.handlers.OneFiveOneDateUtils
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape

@@ -9,7 +9,7 @@
     <h1>Leader Board</h1>
 
     <table class="standard">
-        <tr><th>151er</th><th>Sit Ups</th><th>Lunges</th><th>Burpees</th><th>Miles</th><th>Overall Completion</th></tr>
+        <tr><th>151er</th><th>Sit Ups</th><th>Lunges</th><th>Burpees</th><th>Miles</th><th>Overall Completion</th><th>Shot Taken</th></tr>
         @defining(eachUserTotalsWithPercentages()) { userTotals =>
             @userTotals.map { case (userTotal, percentagesCompleted) =>
                 <tr>
@@ -19,6 +19,7 @@
                     <td>@userTotal.burpees (@percentagesCompleted.burpeesPercent%)</td>
                     <td>@userTotal.miles (@percentagesCompleted.milesPercent%)</td>
                     <td>@percentagesCompleted.overallPercent%</td>
+                    <td>@userTotal.dateShotTaken.map(printableDate(_))</td>
                 </tr>
             }
         }

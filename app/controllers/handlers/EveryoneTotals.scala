@@ -17,7 +17,7 @@ object EveryoneTotals {
     allUsers.map{(eachUser) =>
       val entriesPerUser = ExerciseEntries.getAllForUser(eachUser.id)
       val totalsMap = sumEntries(entriesPerUser)
-      new UserAggregateExercises(eachUser, totalsMap)
+      new UserAggregateExercises(eachUser, totalsMap, dayEarliestShotTaken(entriesPerUser))
     }
   }
 
@@ -56,7 +56,7 @@ object EveryoneTotals {
       val userToDailyTotals = for (eachUser <- allUsers) yield {
         val entriesForUser = entriesForDay.filter(exerciseEntry => exerciseEntry.userId == eachUser.id)
         val userDailyTotal = sumEntries(entriesForUser)
-        new UserAggregateExercises(eachUser, userDailyTotal)
+        new UserAggregateExercises(eachUser, userDailyTotal, dayEarliestShotTaken(entriesForUser))
       }
       eachDay -> userToDailyTotals
     }

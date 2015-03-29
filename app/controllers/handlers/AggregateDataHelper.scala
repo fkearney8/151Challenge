@@ -54,12 +54,18 @@ object AggregateDataHelper {
       sorterLt(calAndUae1._2, calAndUae2._2)
     }.head
   }
+
+  def dayEarliestShotTaken(entries: List[ExerciseEntry]): Option[Calendar] = {
+     //filter to entries for Shots, sort by date
+     val shotsTaken = entries.filter(_.exerciseType == ExerciseType.Shot)
+     shotsTaken.sortBy(_.when).headOption.map(_.when)
+   }
 }
 
-case class UserAggregateExercises(userId: Int, username: String, sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal)
+case class UserAggregateExercises(userId: Int, username: String, sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal, dateShotTaken: Option[Calendar] = None)
   extends AggregateExercises {
-  def this(user: User, aggregateExercises: AnonymousAggregateExercises) {
-    this(user.id, user.username, aggregateExercises.sitUps, aggregateExercises.lunges, aggregateExercises.burpees, aggregateExercises.miles)
+  def this(user: User, aggregateExercises: AnonymousAggregateExercises, dateShotTaken: Option[Calendar]) {
+    this(user.id, user.username, aggregateExercises.sitUps, aggregateExercises.lunges, aggregateExercises.burpees, aggregateExercises.miles, dateShotTaken)
   }
 }
 
