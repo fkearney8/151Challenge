@@ -44,7 +44,7 @@ object EveryoneTotals {
   def totalsPerDayPerUser(): SortedMap[Calendar, List[UserAggregateExercises]] = {
     //from the start of the challenge until today
     val eachDayFromStartToYesterday = fromStartToToday()
-    val allEntries = ExerciseEntries.getAll()
+    val allEntries = ExerciseEntries.getAll
     val allUsers = Users.findAll
 
     val dailyEntryTotals = for (eachDay <- eachDayFromStartToYesterday) yield {
@@ -91,7 +91,7 @@ object EveryoneTotals {
   ))
 
   def everyoneTotalsForAllDays(): AnonymousAggregateExercises = {
-    val allEntries = ExerciseEntries.getAll()
+    val allEntries = ExerciseEntries.getAll
     sumEntries(allEntries)
   }
 

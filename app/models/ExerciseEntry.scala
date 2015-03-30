@@ -59,7 +59,7 @@ object ExerciseEntries {
     }
   }
 
-  def getAll(): List[ExerciseEntry] = {
+  def getAll: List[ExerciseEntry] = {
     db.withSession { implicit session =>
       exerciseEntries.list.map{new ExerciseEntry(_)}
     }

@@ -1,3 +1,2 @@
-./activator -jvm.debug 9999 run
-
+./activator -jvm-debug 9999 run
 

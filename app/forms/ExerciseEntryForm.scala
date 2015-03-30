@@ -2,8 +2,8 @@ package forms
 
 import java.util.{Calendar, Date}
 
-import controllers.handlers.{AggregateDataHelper, OneFiveOneConstants}
-import models.{ExerciseType, ExerciseEntry}
+import controllers.handlers.{PercentageCalculator, AggregateDataHelper, OneFiveOneConstants}
+import models.{ExerciseEntries, ExerciseType, ExerciseEntry}
 import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.format.Formatter
@@ -25,12 +25,20 @@ object ExerciseEntriesForm {
   def validateEntry(entry: ExerciseEntry): Option[String] = {
     val repsValidationString = entry match {
       case ExerciseEntry(_, ExerciseType.Miles, _, _, _, _) => None
+      case ExerciseEntry(_, ExerciseType.Shot, _, _, userId, _) =>
+        //is this user done with the other stuff?
+        val userEntries = ExerciseEntries.getAllForUser(userId)
+        val summedEntries = AggregateDataHelper.sumEntries(userEntries)
+        val totalPercentageComplete = PercentageCalculator.calculateOverallPercentComplete(summedEntries)
+        if (totalPercentageComplete + .0001 < 100.00) {
+          Some("Can't do the shot when you haven't done everything else!")
+        } else None
       case ExerciseEntry(_, _, reps, _, _, _) =>
         if (!reps.isValidInt) Some("Cannot have fractions unless you are entering miles.")
         else None
     }
-    val dateValidationString = {
 
+    val dateValidationString = {
       val twoWeeksAgo = Calendar.getInstance()
       twoWeeksAgo.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 14))
       if (entry.when.compareTo(twoWeeksAgo) < 0) {
@@ -41,7 +49,7 @@ object ExerciseEntriesForm {
     }
 
     if (repsValidationString.isDefined || dateValidationString.isDefined) {
-      Some(repsValidationString.getOrElse("") + dateValidationString.getOrElse(""))
+      Some(repsValidationString.fold("")(_ + " ") + dateValidationString.getOrElse(""))
     } else None
   }
 }
