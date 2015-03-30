@@ -40,15 +40,16 @@ object EveryoneTotals {
     }.reverse
 
     //for anyone who has taken the shot, we need to sort by the date of the shot taken
-    val completionSplit = sortedByPercentage.span {
-      case (userAggregates, percentages) => userAggregates.dateShotTaken.isDefined
+    val completionSplit = sortedByPercentage.partition {
+      case (userAggregate, percentages) =>
+        userAggregate.dateShotTaken.isDefined
     }
 
     val completedSortedByDateShotTaken = completionSplit._1.sortBy {
-      case (userAggregates, percentages) =>
+      case (userAggregate, percentages) =>
         //use the date if present, or something is wrong
-        userAggregates.dateShotTaken.getOrElse {
-          logger.error(s"After splitting out people that took a shot, could not find the date the shot was taken for user ${userAggregates.userId}")
+        userAggregate.dateShotTaken.getOrElse {
+          logger.error(s"After splitting out people that took a shot, could not find the date the shot was taken for user ${userAggregate.userId}")
           val futureCal = Calendar.getInstance()
           futureCal.set(Calendar.YEAR, futureCal.get(Calendar.YEAR) + 10)
           futureCal
