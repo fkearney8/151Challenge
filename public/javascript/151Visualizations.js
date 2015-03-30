@@ -85,13 +85,15 @@ var createLineChart = function($location, graphLabels, graphData){
         labels: graphLabels,
         datasets: [
             {
-                label: "Everyone - daily progress",
+                label: "Progress By Day",
                 fillColor: "rgba(220,220,220,0.2)",
                 strokeColor: "rgba(220,220,220,1)",
                 pointColor: "rgba(220,220,220,1)",
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
                 pointHighlightStroke: "rgba(220,220,220,1)",
+                pointDotRadius : 2,
+                pointHitDetectionRadius : 0,
                 data: graphData
             }
         ]

@@ -40,7 +40,7 @@ object AddExerciseHandler {
           errorString.fold {
             ExerciseEntries.add(exerciseEntry)
             notify(exerciseEntry)
-            Redirect("/displayEntries")
+            Redirect("/record?justRecorded=true")
           }(BadRequest(_))
         }
       }
@@ -50,12 +50,12 @@ object AddExerciseHandler {
   def notify(exercise: ExerciseEntry) {
     val user = Users.findById(exercise.userId)
     user match {
-      case Some(userActual) => {
+      case Some(userActual) =>
         val username = userActual.username
         val reps = exercise.reps
         val exerciseType = exercise.exerciseType
-        bot.post(s"$username recorded $reps $exerciseType\n${exercise.comment}")
-      }
+        Logger.debug(s"Not sending to bot right now: $username recorded $reps $exerciseType\n${exercise.comment}")
+//        bot.post(s"$username recorded $reps $exerciseType\n${exercise.comment}")
       case None => Logger.error(s"No user for exercise entered: $exercise")
     }
   }

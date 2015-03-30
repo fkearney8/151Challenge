@@ -10,7 +10,9 @@ import scala.slick.lifted.ProvenShape
 
 
 case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: Calendar, userId: Int, comment: String) {
+
   def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTimeInMillis), userId, comment)
+
   def this(row: ExerciseEntries.RowType) {
     this(row._1, ExerciseType.withName(row._2), row._3, {
           val entryCal = Calendar.getInstance()
