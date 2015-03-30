@@ -5,10 +5,12 @@ import java.util.Calendar
 import controllers.handlers.OneFiveOneDateUtils._
 import models.{ExerciseEntry, ExerciseEntries, Users}
 import controllers.handlers.AggregateDataHelper._
+import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.SortedMap
 
 object EveryoneTotals {
+  val logger = LoggerFactory.getLogger("controllers.handlers.EveryoneTotals")
 
   def eachUserTotals(): List[UserAggregateExercises] = {
     //retrieve each user
@@ -23,17 +25,37 @@ object EveryoneTotals {
 
   def eachUserTotalsWithPercentages(): List[(UserAggregateExercises, PercentagesCompleted)] = {
     val userTotals = eachUserTotals()
-    userTotals.map{userTotal =>
+    val sortedByPercentage = userTotals.map { userTotal =>
       import controllers.handlers.PercentageCalculator._
       val percentagesCompleted = PercentagesCompleted(
         sitUpsPercentComplete(userTotal.sitUps),
         lungesPercentComplete(userTotal.lunges),
         burpeesPercentComplete(userTotal.burpees),
         milesPercentComplete(userTotal.miles),
-        calculateOverallPercentComplete(userTotal)
-      )
+        calculateOverallPercentComplete(userTotal))
+
       (userTotal, percentagesCompleted)
-    }.sortBy{_._2.overallPercent}.reverse
+    }.sortBy {
+      _._2.overallPercent
+    }.reverse
+
+    //for anyone who has taken the shot, we need to sort by the date of the shot taken
+    val completionSplit = sortedByPercentage.span {
+      case (userAggregates, percentages) => userAggregates.dateShotTaken.isDefined
+    }
+
+    val completedSortedByDateShotTaken = completionSplit._1.sortBy {
+      case (userAggregates, percentages) =>
+        //use the date if present, or something is wrong
+        userAggregates.dateShotTaken.getOrElse {
+          logger.error(s"After splitting out people that took a shot, could not find the date the shot was taken for user ${userAggregates.userId}")
+          val futureCal = Calendar.getInstance()
+          futureCal.set(Calendar.YEAR, futureCal.get(Calendar.YEAR) + 10)
+          futureCal
+        }
+    }
+
+    completedSortedByDateShotTaken ++ completionSplit._2
   }
 
 
