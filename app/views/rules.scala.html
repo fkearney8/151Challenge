@@ -1,0 +1,43 @@
+@()(implicit request: RequestHeader)
+
+@import controllers.handlers.OneFiveOneDateUtils
+@import controllers.handlers.OneFiveOneConstants
+
+@main("Rules of the Challenge") {
+  <p>For 2016, the rules are as follows:</p>
+  <p>
+    In any order, interleaving as you will, do:
+    <ul>
+      <li>3051 Air Squats</li>
+      <li>2051 Push Ups</li>
+      <li>1051 10-second Planks (any position)</li>
+      <li>151 Miles</li>
+    </ul>
+  </p>
+  <p>
+    Then when all that is done, drink a shot of Bacardi 151 and take a picture to mark the occasion.
+    We start on on @OneFiveOneDateUtils.printableDate(OneFiveOneConstants.START_OF_CHALLENGE) at 12:00am.
+  </p>
+  <p>
+  <p>
+    Conversion ratios:
+    You can get conversion ratios for things if you can't physically do them for some reason. We'll be kind in that regard. However
+    if you can do it, but want some conversion because you're doing a lot of something else, don't expect friendly ratios.
+    Part of the challenge is suffering through whatever it is we're doing together.
+
+    Some ratios we've agreed to:
+  <ul>
+    <li>10 Biking Miles:1 Run/Walk Mile</li>
+    <li>Outdoor Soccer game:2 Run/Walk Miles</li>
+    <li>Ultimate Frisbee game:2 Run/Walk Miles</li>
+  </ul>
+  </p>
+    If you do squats with a weight, or harder push ups, etc, you can of course count those as a
+    rep for the base exercise. You don't get a bonus, but you can count it as a rep.
+  </p>
+  <p>
+    The spirit of this is to incentivize more exercise. So if you have a pedometer, think about tracking only what
+    is really extra walking or running, and not your day-to-day walking in the office or home that everyone does but will not track
+    without a pedometer.
+  </p>
+}

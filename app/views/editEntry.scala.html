@@ -1,0 +1,9 @@
+@(exerciseEntry: ExerciseEntry)(implicit request: Request[AnyContent])
+
+@main("Edit Entry") {
+  @helper.form(action = routes.Application.doEditExerciseEntry()) {
+    Edit entry: @exerciseEntry.id, @exerciseEntry.exerciseType, @exerciseEntry.reps, @exerciseEntry.when, @exerciseEntry.comment
+    <button type="submit" value="save">Save Changes</button>
+    <button type="submit" value="delete">Delete Entry</button>
+  }
+}

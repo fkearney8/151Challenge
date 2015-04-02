@@ -2,9 +2,9 @@ package controllers.handlers
 
 import java.util.Calendar
 
-import controllers.handlers.OneFiveOneDateUtils._
 import models._
-import play.api.Logger
+import utils.Exercises
+import utils.Exercises.{Exercise, Shot}
 
 import scala.collection.immutable.SortedMap
 
@@ -14,12 +14,14 @@ import scala.collection.immutable.SortedMap
 object AggregateDataHelper {
 
   def sumEntries(entriesToSum: List[ExerciseEntry]): AnonymousAggregateExercises = {
-    val totaledEntries = entriesToSum.foldLeft{Map.empty[ExerciseType.Value, BigDecimal]} {
-        (runningTotals: Map[ExerciseType.Value, BigDecimal], exerciseEntry: ExerciseEntry) => {
-      val exerciseType: ExerciseType.Value = exerciseEntry.exerciseType
-      val currentAmount = runningTotals.getOrElse(exerciseType, BigDecimal(0))
-      runningTotals + (exerciseType -> (currentAmount + exerciseEntry.reps))
-    }}
+    val totaledEntries = entriesToSum.foldLeft{Map.empty[Exercise, BigDecimal]} {
+        (runningTotals: Map[Exercise, BigDecimal], exerciseEntry: ExerciseEntry) => {
+
+          val exerciseType = exerciseEntry.exerciseType
+          val currentAmount = runningTotals.getOrElse(exerciseType, BigDecimal(0))
+          runningTotals + (exerciseType -> (currentAmount + exerciseEntry.reps))
+        }
+    }
     new AnonymousAggregateExercises(totaledEntries)
   }
 
@@ -41,49 +43,65 @@ object AggregateDataHelper {
   def sumUserTotals(userTotalsList: Seq[UserAggregateExercises]): AnonymousAggregateExercises = {
     userTotalsList.foldLeft(new AnonymousAggregateExercises(0, 0, 0, 0.0)) {
       (runningTotals: AnonymousAggregateExercises, userTotals: UserAggregateExercises) =>
-        new AnonymousAggregateExercises(runningTotals.sitUps + userTotals.sitUps,
-          runningTotals.lunges + userTotals.lunges,
-          runningTotals.burpees + userTotals.burpees,
-          runningTotals.miles + userTotals.miles)
+        new AnonymousAggregateExercises(runningTotals.reps1 + userTotals.reps1,
+          runningTotals.reps2 + userTotals.reps2,
+          runningTotals.reps3 + userTotals.reps3,
+          runningTotals.reps4 + userTotals.reps4)
     }
   }
 
   /** Find the best day of the days data given. 'Best' is defined as the first (least) UserAggregateData given the sorterLt. */
-  def bestDayOf(sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean, dailyTotals: SortedMap[Calendar, UserAggregateExercises]): (Calendar, UserAggregateExercises) = {
+  def bestDayOf(sorterLt: (UserAggregateExercises, UserAggregateExercises) => Boolean,
+                dailyTotals: SortedMap[Calendar, UserAggregateExercises]):
+  (Calendar, UserAggregateExercises) = {
+
     dailyTotals.toList.sortWith { (calAndUae1: (Calendar, UserAggregateExercises), calAndUae2: (Calendar, UserAggregateExercises)) =>
       sorterLt(calAndUae1._2, calAndUae2._2)
-    }.head
+    }.headOption.getOrElse {
+      //if nothing else, today with 0 progress is best
+      (Calendar.getInstance(), new UserAggregateExercises(0, "No One", 0, 0, 0, 0.0))
+    }
   }
 
   def dayEarliestShotTaken(entries: List[ExerciseEntry]): Option[Calendar] = {
      //filter to entries for Shots, sort by date
-     val shotsTaken = entries.filter(_.exerciseType == ExerciseType.Shot)
+     val shotsTaken = entries.filter(_.exerciseType.name == Shot.name)
      shotsTaken.sortBy(_.when).headOption.map(_.when)
    }
 }
 
-case class UserAggregateExercises(userId: Int, username: String, sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal, dateShotTaken: Option[Calendar] = None)
+case class UserAggregateExercises(userId: Int, username: String,
+                                  reps1: Int, reps2: Int, reps3: Int, reps4: BigDecimal, dateShotTaken: Option[Calendar] = None)
   extends AggregateExercises {
   def this(user: User, aggregateExercises: AnonymousAggregateExercises, dateShotTaken: Option[Calendar]) {
-    this(user.id, user.username, aggregateExercises.sitUps, aggregateExercises.lunges, aggregateExercises.burpees, aggregateExercises.miles, dateShotTaken)
+    this(user.id, user.username, aggregateExercises.reps1, aggregateExercises.reps2, aggregateExercises.reps3, aggregateExercises.reps4, dateShotTaken)
   }
 }
 
-case class AnonymousAggregateExercises(sitUps: Int, lunges: Int, burpees: Int, miles: BigDecimal) extends AggregateExercises {
-  def this(totalsMap: Map[ExerciseType.Value, BigDecimal]) {
-    this(totalsMap.getOrElse(ExerciseType.SitUps, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Lunges, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Burpees, BigDecimal(0)).toInt,
-        totalsMap.getOrElse(ExerciseType.Miles, BigDecimal(0)))
+case class AnonymousAggregateExercises(reps1: Int, reps2: Int, reps3: Int, reps4: BigDecimal) extends AggregateExercises {
+  def this(totalsMap: Map[Exercise, BigDecimal]) {
+    this(totalsMap.getOrElse(Exercises.yearsExercises._1, BigDecimal(0)).toInt,
+        totalsMap.getOrElse(Exercises.yearsExercises._2, BigDecimal(0)).toInt,
+        totalsMap.getOrElse(Exercises.yearsExercises._3, BigDecimal(0)).toInt,
+        totalsMap.getOrElse(Exercises.yearsExercises._4, BigDecimal(0)))
   }
 }
 
+//TODO change these to store a map of exercises to counts, rather than specific totals in position
 trait AggregateExercises {
-  def sitUps: Int
-  def lunges: Int
-  def burpees: Int
-  def miles: BigDecimal
+  def reps1: Int
+  def reps2: Int
+  def reps3: Int
+  def reps4: BigDecimal
 }
 
-case class PercentagesCompleted(sitUpsPercent: BigDecimal, lungesPercent: BigDecimal, burpeesPercent: BigDecimal, milesPercent: BigDecimal, overallPercent: BigDecimal)
+case class PercentagesCompleted(ex1Percent: BigDecimal,
+                                ex2Percent: BigDecimal,
+                                ex3Percent: BigDecimal,
+                                ex4Percent: BigDecimal,
+                                overallPercent: BigDecimal) {
+  def anythingComplete: Boolean = {
+    overallPercent != BigDecimal(0)
+  }
+}
 

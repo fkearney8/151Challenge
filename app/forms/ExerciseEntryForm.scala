@@ -3,14 +3,15 @@ package forms
 import java.util.{Calendar, Date}
 
 import controllers.handlers.{PercentageCalculator, AggregateDataHelper, OneFiveOneConstants}
-import models.{ExerciseEntries, ExerciseType, ExerciseEntry}
+import models.{ExerciseEntries, ExerciseEntry}
 import play.api.Logger
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{FormError, _}
+import utils.Exercises._
 
 
-case class ExerciseEntryFormInput(exerciseType: ExerciseType.Value, reps:Double, when: Date, comment: String)
+case class ExerciseEntryFormInput(exerciseType: Exercise, reps:Double, when: Date, comment: String)
 
 object ExerciseEntriesForm {
   val exerciseEntryForm = Form(
@@ -24,8 +25,8 @@ object ExerciseEntriesForm {
 
   def validateEntry(entry: ExerciseEntry): Option[String] = {
     val repsValidationString = entry match {
-      case ExerciseEntry(_, ExerciseType.Miles, _, _, _, _) => None
-      case ExerciseEntry(_, ExerciseType.Shot, _, _, userId, _) =>
+      case ExerciseEntry(_, Miles, _, _, _, _) => None
+      case ExerciseEntry(_, Shot, _, _, userId, _) =>
         //is this user done with the other stuff?
         val userEntries = ExerciseEntries.getAllForUser(userId)
         val summedEntries = AggregateDataHelper.sumEntries(userEntries)
@@ -39,6 +40,7 @@ object ExerciseEntriesForm {
     }
 
     val dateValidationString = {
+
       val twoWeeksAgo = Calendar.getInstance()
       twoWeeksAgo.setTimeInMillis(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 14))
       if (entry.when.compareTo(twoWeeksAgo) < 0) {
@@ -58,26 +60,27 @@ object ExerciseEntriesForm {
 // If you don't, the Formatter will be null when the Mapping is instantiated, even if passed explicitly.
 // I have no idea why that would not work, but finally happened to try this after 3 hours and it suddenly works.
 object ExerciseCustomMappings {
-  implicit val exerciseTypeFormatter = new Formatter[ExerciseType.Value] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ExerciseType.Value] = {
+  implicit val exerciseTypeFormatter = new Formatter[Exercise] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Exercise] = {
       Left(List(new FormError(key, "Exercise type Mapping not complete")))
-            val mappedValue = data.get(key).map { value =>
-              try {
-                Right(ExerciseType.withName(value))
-              } catch {
-                case e: NoSuchElementException => Left(List(new FormError(key, value + " is not a valid exercise type")))
-              }
-            }
-            mappedValue.getOrElse(Left(List(new FormError(key, "No exercise type provided"))))
+
+      val mappedValue = data.get(key).map { value =>
+        try {
+          Right(Exercise.withName(value))
+        } catch {
+          case e: NoSuchElementException => Left(List(new FormError(key, value + " is not a valid exercise type")))
+        }
+      }
+      mappedValue.getOrElse(Left(List(new FormError(key, "No exercise type provided"))))
     }
 
 
-    override def unbind(key: String, value: ExerciseType.Value): Map[String, String] = {
+    override def unbind(key: String, value: Exercise): Map[String, String] = {
       Map(key -> value.toString)
     }
   }
 
-  def exerciseEntryMapping: Mapping[ExerciseType.Value] = Forms.of[ExerciseType.Value]
+  def exerciseEntryMapping: Mapping[Exercise] = Forms.of[Exercise]
 
   //There's a doubleFormat provided in the Play framework, but not a mapping for it in play.api.data.Forms. Weird.
   def doubleMapping: Mapping[Double] = Forms.of[Double](play.api.data.format.Formats.doubleFormat)

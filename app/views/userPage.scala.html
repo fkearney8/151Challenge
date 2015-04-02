@@ -3,35 +3,39 @@
 @import controllers.handlers.OneFiveOneDateUtils.printableDate
 @import controllers.handlers.PercentageCalculator
 @import play.api.libs.json.Json
+@import utils.Exercises._
 
 @main("151er stats for " + userStats.user.username) {
     <h1>@userStats.user.username Stats</h1>
     <ul>
         <li>
         @defining(userStats.bestOverallProgressAnyDay()) { bestOverall =>
-            Best overall day: @printableDate(bestOverall._1) with @bestOverall._2.sitUps situps, @bestOverall._2.lunges lunges,
-        @bestOverall._2.burpees burpees, and @bestOverall._2.miles miles
+            Best overall day: @printableDate(bestOverall._1) with
+            @bestOverall._2.reps1 @yearsExercises._1.displayName,
+            @bestOverall._2.reps2 @yearsExercises._2.displayName,
+            @bestOverall._2.reps3 @yearsExercises._3.displayName
+            and @bestOverall._2.reps4 @yearsExercises._4.displayName
         for overall completion of @PercentageCalculator.calculateOverallPercentComplete(bestOverall._2)%
         }
         </li>
         <li>
-        @defining(userStats.bestSitUpsAnyDay()) { bestSitups =>
-            Best situps day: @printableDate(bestSitups._1) with @bestSitups._2.sitUps
+        @defining(userStats.bestExercise1Day()) { best1 =>
+            Best @yearsExercises._1.displayName day: @printableDate(best1._1) with @best1._2.reps1
         }
         </li>
         <li>
-        @defining(userStats.bestLungesAnyDay()) { bestLunges =>
-            Best lunges day: @printableDate(bestLunges._1) with @bestLunges._2.lunges
+        @defining(userStats.bestExercise2Day()) { best2 =>
+            Best @yearsExercises._2.displayName day: @printableDate(best2._1) with @best2._2.reps2
         }
         </li>
         <li>
-        @defining(userStats.bestBurpeesAnyDay()) { bestBurpees =>
-            Best burpees day: @printableDate(bestBurpees._1) with @bestBurpees._2.burpees
+        @defining(userStats.bestExercise3Day()) { best3 =>
+            Best @yearsExercises._3.displayName day: @printableDate(best3._1) with @best3._2.reps3
         }
         </li>
         <li>
-        @defining(userStats.bestMilesAnyDay()) { bestMiles =>
-            Best miles day: @printableDate(bestMiles._1) with @bestMiles._2.miles
+        @defining(userStats.bestExercise4Day()) { best4 =>
+            Best @yearsExercises._4.displayName day: @printableDate(best4._1) with @best4._2.reps4
         }
         </li>
     </ul>
@@ -44,11 +48,11 @@
     <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
 
 
-    @defining(userStats.userDataPerDay) { userDataPerDay =>
+    @defining(userStats.overallGraphJson) { graphData =>
         <script>
         createLineChart ( "#overallProgressLineChart",
-            @Html(Json.stringify(userStats.overallGraphJson.value("days"))),
-            @Html(Json.stringify(userStats.overallGraphJson.value("data")))) ;
+            @Html(Json.stringify(graphData.value("days"))),
+            @Html(Json.stringify(graphData.value("data")))) ;
         </script>
     }
 }

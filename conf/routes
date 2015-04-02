@@ -11,9 +11,14 @@ GET         /logout                     controllers.LoginController.logout
 GET         /displayRegistration        controllers.Registration.displayRegistration
 POST        /registerUser               controllers.Registration.registerUser
 
+GET         /history                    controllers.Application.history
+GET         /rules                      controllers.Application.rules
+
 # Recording
 GET         /record                     controllers.Application.recordExercise
 POST        /record                     controllers.Application.addExerciseEntry
+GET         /editEntry                  controllers.Application.editExerciseEntry
+POST        /editEntry                  controllers.Application.doEditExerciseEntry
 
 # Display stuff
 GET         /displayEntries             controllers.Application.displayEntries

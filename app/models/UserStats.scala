@@ -15,13 +15,12 @@ class UserStats(val id: Int) {
 
   val userDataPerDay = userDataByDay(id)
 
-
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(
     findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)), userDataPerDay)
-  def bestSitUpsAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.sitUps), userDataPerDay)
-  def bestLungesAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.lunges), userDataPerDay)
-  def bestBurpeesAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.burpees), userDataPerDay)
-  def bestMilesAnyDay(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.miles), userDataPerDay)
+  def bestExercise1Day(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.reps1), userDataPerDay)
+  def bestExercise2Day(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.reps2), userDataPerDay)
+  def bestExercise3Day(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.reps3), userDataPerDay)
+  def bestExercise4Day(): (Calendar, UserAggregateExercises) = bestDayOf(findTheGreatestOf(_.reps4), userDataPerDay)
 
   private def userDataByDay(id: Int): SortedMap[Calendar, UserAggregateExercises] = {
     val allUsers = EveryoneTotals.totalsPerDayPerUser()

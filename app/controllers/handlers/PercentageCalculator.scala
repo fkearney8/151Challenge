@@ -8,17 +8,17 @@ object PercentageCalculator {
     *
     * Note these percentages are already normalized to 0-100 values rather than 0-1*/
   def calculateOverallPercentComplete(aggregateExercises: AggregateExercises): Double= {
-    val totalPercentages = (sitUpsPercentComplete(aggregateExercises.sitUps)
-        + lungesPercentComplete(aggregateExercises.lunges)
-        + burpeesPercentComplete(aggregateExercises.burpees)
-        + milesPercentComplete(aggregateExercises.miles))
+    val totalPercentages = (exercise1PercentComplete(aggregateExercises.reps1)
+        + exercise2PercentComplete(aggregateExercises.reps2)
+        + exercise3PercentComplete(aggregateExercises.reps3)
+        + exercise4PercentComplete(aggregateExercises.reps4))
     roundToTwoDecimalPoints(totalPercentages / 4.0)
   }
 
-  def sitUpsPercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / TOTAL_SIT_UPS))
-  def lungesPercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / TOTAL_LUNGES))
-  def burpeesPercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / TOTAL_BURPEES))
-  def milesPercentComplete(repsDone: BigDecimal): Double = capAt100Percent(doubleToPercentage((repsDone / TOTAL_MILES).toDouble))
+  def exercise1PercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / EXERCISE_1_REPS))
+  def exercise2PercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / EXERCISE_2_REPS))
+  def exercise3PercentComplete(repsDone: Int): Double = capAt100Percent(doubleToPercentage(repsDone.toDouble / EXERCISE_3_REPS))
+  def exercise4PercentComplete(repsDone: BigDecimal): Double = capAt100Percent(doubleToPercentage((repsDone / EXERCISE_4_REPS).toDouble))
 
   private def doubleToPercentage(rawPercentage: Double): Double = Math.round(rawPercentage * 10000.0) / 100.0
   private def roundToTwoDecimalPoints(raw: Double): Double = Math.round(raw * 100.0) / 100.0

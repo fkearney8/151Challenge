@@ -4,6 +4,7 @@
 @import controllers.handlers.OneFiveOneDateUtils
 @import controllers.handlers.AggregateDataHelper._
 @import controllers.handlers.PercentageCalculator._
+@import utils.Exercises._
 
 @main("Record Progress") {
     <script>
@@ -64,8 +65,8 @@
                 </td>
                 <td>
                     <select id="exerciseType" name="exerciseType">
-                    @ExerciseType.values.toList.sorted.map{exType =>
-                        <option value="@exType.toString">@exType.toString</option>
+                    @exercisesForYearList().map { exType =>
+                        <option value="@exType.name">@exType.displayName</option>
                     }
                     </select>
                 </td>
@@ -104,18 +105,18 @@
         <h2>Current Progress</h2>
         <table>
             <tr>
-                <th>SitUps</th>
-                <th>Lunges</th>
-                <th>Burpees</th>
-                <th>Miles</th>
+                <th>@yearsExercises._1.displayName</th>
+                <th>@yearsExercises._2.displayName</th>
+                <th>@yearsExercises._3.displayName</th>
+                <th>@yearsExercises._4.displayName</th>
                 <th>Overall</th>
             </tr>
             <tr>
                 @defining(sumEntries(userEntries)) { summedUserEntries =>
-                <td style="padding: 5px;">@summedUserEntries.sitUps (@sitUpsPercentComplete(summedUserEntries.sitUps)%)</td>
-                <td style="padding: 5px;">@summedUserEntries.lunges (@lungesPercentComplete(summedUserEntries.lunges)%)</td>
-                <td style="padding: 5px;">@summedUserEntries.burpees (@burpeesPercentComplete(summedUserEntries.burpees)%)</td>
-                <td style="padding: 5px;">@summedUserEntries.miles (@milesPercentComplete(summedUserEntries.miles)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.reps1 (@exercise1PercentComplete(summedUserEntries.reps1)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.reps2 (@exercise2PercentComplete(summedUserEntries.reps2)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.reps3 (@exercise3PercentComplete(summedUserEntries.reps3)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.reps4 (@exercise4PercentComplete(summedUserEntries.reps4)%)</td>
                 <td style="padding: 5px;">@calculateOverallPercentComplete(sumEntries(userEntries))%</td>
                 }
             </tr>

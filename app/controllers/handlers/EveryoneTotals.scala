@@ -28,13 +28,15 @@ object EveryoneTotals {
     val sortedByPercentage = userTotals.map { userTotal =>
       import controllers.handlers.PercentageCalculator._
       val percentagesCompleted = PercentagesCompleted(
-        sitUpsPercentComplete(userTotal.sitUps),
-        lungesPercentComplete(userTotal.lunges),
-        burpeesPercentComplete(userTotal.burpees),
-        milesPercentComplete(userTotal.miles),
+        exercise1PercentComplete(userTotal.reps1),
+        exercise2PercentComplete(userTotal.reps2),
+        exercise3PercentComplete(userTotal.reps3),
+        exercise4PercentComplete(userTotal.reps4),
         calculateOverallPercentComplete(userTotal))
 
       (userTotal, percentagesCompleted)
+    }.filter { userTotal =>
+      userTotal._2.anythingComplete
     }.sortBy {
       _._2.overallPercent
     }.reverse
@@ -67,7 +69,7 @@ object EveryoneTotals {
   def totalsPerDayPerUser(): SortedMap[Calendar, List[UserAggregateExercises]] = {
     //from the start of the challenge until today
     val eachDayFromStartToYesterday = fromStartToToday()
-    val allEntries = ExerciseEntries.getAll
+    val allEntries = ExerciseEntries.getAll()
     val allUsers = Users.findAll
 
     val dailyEntryTotals = for (eachDay <- eachDayFromStartToYesterday) yield {
@@ -104,17 +106,17 @@ object EveryoneTotals {
 
   private val NoOneTotal: UserAggregateExercises = UserAggregateExercises(-1, "No One", 0, 0, 0, 0)
 
-  def bestSitUpsYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.sitUps))
-  def bestLungesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.lunges))
-  def bestBurpeesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.burpees))
-  def bestMilesYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.miles))
+  def bestExercise1Yesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.reps1))
+  def bestExercise2Yesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.reps2))
+  def bestExercise3Yesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.reps3))
+  def bestExercise4Yesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(_.reps4))
 
   def bestOverallProgressYesterday(): UserAggregateExercises = bestProgressOnDay(getYesterday, findTheGreatestOf(
     PercentageCalculator.calculateOverallPercentComplete(_)
   ))
 
   def everyoneTotalsForAllDays(): AnonymousAggregateExercises = {
-    val allEntries = ExerciseEntries.getAll
+    val allEntries = ExerciseEntries.getAll()
     sumEntries(allEntries)
   }
 
@@ -122,7 +124,9 @@ object EveryoneTotals {
     everyoneTotalsPerDay.toList.sortBy {
       case (day: Calendar, totals: AnonymousAggregateExercises) =>
         -PercentageCalculator.calculateOverallPercentComplete(totals)
-    }.head
+    }.headOption.getOrElse {
+      (Calendar.getInstance(), new AnonymousAggregateExercises(0, 0, 0, 0.0))
+    }
   }
 
   def everyoneTotalsPerDay: SortedMap[Calendar, AnonymousAggregateExercises] = {
@@ -158,9 +162,10 @@ object EveryoneTotals {
   }
 
   def bestOverallProgressAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(PercentageCalculator.calculateOverallPercentComplete(_)))
-  def bestSitUpsAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.sitUps))
-  def bestLungesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.lunges))
-  def bestBurpeesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.burpees))
-  def bestMilesAnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.miles))
+  //TODO fix this up to find based on exercise type, not specific placement in the user aggregates
+  def bestExercise1AnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.reps1))
+  def bestExercise2AnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.reps2))
+  def bestExercise3AnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.reps3))
+  def bestExercise4AnyDay(): (Calendar, UserAggregateExercises) = bestProgressAnyDay(findTheGreatestOf(_.reps4))
 
 }

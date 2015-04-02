@@ -3,21 +3,22 @@
 @import controllers.handlers.EveryoneTotals._
 @import controllers.handlers.OneFiveOneDateUtils._
 @import controllers.handlers.PercentageCalculator
+@import utils.Exercises._
 
 @main("Leader Board") {
 
     <h1>Leader Board</h1>
 
     <table class="standard">
-        <tr><th>151er</th><th>Sit Ups</th><th>Lunges</th><th>Burpees</th><th>Miles</th><th>Overall Completion</th><th>Shot Taken</th></tr>
+        <tr><th>151er</th><th>@yearsExercises._1.displayName</th><th>@yearsExercises._2.displayName</th><th>@yearsExercises._3.displayName</th><th>@yearsExercises._4.displayName</th><th>Overall Completion</th><th>Shot Taken</th></tr>
         @defining(eachUserTotalsWithPercentages()) { userTotals =>
             @userTotals.map { case (userTotal, percentagesCompleted) =>
                 <tr>
                     <td><a href="/151er/@userTotal.userId">@userTotal.username</a></td>
-                    <td>@userTotal.sitUps (@percentagesCompleted.sitUpsPercent%)</td>
-                    <td>@userTotal.lunges (@percentagesCompleted.lungesPercent%)</td>
-                    <td>@userTotal.burpees (@percentagesCompleted.burpeesPercent%)</td>
-                    <td>@userTotal.miles (@percentagesCompleted.milesPercent%)</td>
+                    <td>@userTotal.reps1 (@percentagesCompleted.ex1Percent%)</td>
+                    <td>@userTotal.reps2 (@percentagesCompleted.ex2Percent%)</td>
+                    <td>@userTotal.reps3 (@percentagesCompleted.ex3Percent%)</td>
+                    <td>@userTotal.reps4 (@percentagesCompleted.ex4Percent%)</td>
                     <td>@percentagesCompleted.overallPercent%</td>
                     <td>@userTotal.dateShotTaken.map(printableDate(_))</td>
                 </tr>
@@ -26,10 +27,10 @@
         <tr style="padding-top: 10px; font-weight: 500;color: #DB1B1B;">
             <td>TOTAL</td>
             @defining(everyoneTotalsForAllDays()){ everyoneTotals =>
-                <td>@everyoneTotals.sitUps</td>
-                <td>@everyoneTotals.lunges</td>
-                <td>@everyoneTotals.burpees</td>
-                <td>@everyoneTotals.miles</td>
+                <td>@everyoneTotals.reps1</td>
+                <td>@everyoneTotals.reps2</td>
+                <td>@everyoneTotals.reps3</td>
+                <td>@everyoneTotals.reps4</td>
                 <td></td>
                 <td></td>
             }
@@ -43,19 +44,24 @@
         }
         <ul>
             @defining(bestOverallProgressYesterday()) { bestDayYesterday =>
-                <li>Overall: @bestDayYesterday.username with @bestDayYesterday.sitUps situps, @bestDayYesterday.lunges lunges, @bestDayYesterday.burpees burpees and @bestDayYesterday.miles miles, for @PercentageCalculator.calculateOverallPercentComplete(bestDayYesterday)%
+                <li>Overall: @bestDayYesterday.username with
+                    @bestDayYesterday.reps1 @yearsExercises._1.displayName,
+                    @bestDayYesterday.reps2 @yearsExercises._2.displayName,
+                    @bestDayYesterday.reps3 @yearsExercises._3.displayName and
+                    @bestDayYesterday.reps4 @yearsExercises._4.displayName, for
+                    @PercentageCalculator.calculateOverallPercentComplete(bestDayYesterday)%
             }
-            @defining(bestSitUpsYesterday()) { bestSitUpsYesterday =>
-                <li>SitUps: @bestSitUpsYesterday.username with @bestSitUpsYesterday.sitUps</li>
+            @defining(bestExercise1Yesterday()) { best1Yesterday =>
+                <li>@yearsExercises._1.displayName: @best1Yesterday.username with @best1Yesterday.reps1</li>
             }
-            @defining(bestLungesYesterday()) { bestLungesYesterday =>
-                <li>Lunges:  @bestLungesYesterday.username with @bestLungesYesterday.lunges </li>
+            @defining(bestExercise2Yesterday()) { best2Yesterday =>
+                <li>@yearsExercises._2.displayName:  @best2Yesterday.username with @best2Yesterday.reps2 </li>
             }
-            @defining(bestBurpeesYesterday()) { bestBurpeesYesterday =>
-                <li>Burpees: @bestBurpeesYesterday.username with @bestBurpeesYesterday.burpees </li>
+            @defining(bestExercise3Yesterday()) { best3Yesterday =>
+                <li>@yearsExercises._3.displayName: @best3Yesterday.username with @best3Yesterday.reps3 </li>
             }
-            @defining(bestMilesYesterday()) { bestMilesYesterday =>
-                <li>Miles: @bestMilesYesterday.username with @bestMilesYesterday.miles </li>
+            @defining(bestExercise4Yesterday()) { best4Yesterday =>
+                <li>@yearsExercises._4.displayName: @best4Yesterday.username with @best4Yesterday.reps4 </li>
             }
         </ul>
     </div>
@@ -66,27 +72,31 @@
             <li>
                 @defining(bestOverallProgressAnyDay()) { bestOverallDay =>
                     Best overall day: @bestOverallDay._2.username on @printableDate(bestOverallDay._1) with
-                    @bestOverallDay._2.sitUps situps, @bestOverallDay._2.lunges lunges, @bestOverallDay._2.burpees burpees and @bestOverallDay._2.miles miles, for @PercentageCalculator.calculateOverallPercentComplete(bestOverallDay._2)%
+                    @bestOverallDay._2.reps1 @yearsExercises._1.displayName,
+                    @bestOverallDay._2.reps2 @yearsExercises._2.displayName,
+                    @bestOverallDay._2.reps3 @yearsExercises._3.displayName and
+                    @bestOverallDay._2.reps4 @yearsExercises._4.displayName,
+                    for @PercentageCalculator.calculateOverallPercentComplete(bestOverallDay._2)%
                 }
             </li>
             <li>
-                @defining(bestSitUpsAnyDay()) { bestSitups =>
-                    Best situps: @bestSitups._2.username on @printableDate(bestSitups._1) with @bestSitups._2.sitUps
+                @defining(bestExercise1AnyDay()) { best1 =>
+                    Best @yearsExercises._1.displayName: @best1._2.username on @printableDate(best1._1) with @best1._2.reps1
                 }
             </li>
             <li>
-                @defining(bestLungesAnyDay()) { bestLunges =>
-                    Best lunges: @bestLunges._2.username on @printableDate(bestLunges._1) with @bestLunges._2.lunges
+                @defining(bestExercise2AnyDay()) { best2 =>
+                    Best @yearsExercises._2.displayName: @best2._2.username on @printableDate(best2._1) with @best2._2.reps2
                 }
             </li>
             <li>
-                @defining(bestBurpeesAnyDay()) { bestBurpees =>
-                    Best burpees: @bestBurpees._2.username on @printableDate(bestBurpees._1) with @bestBurpees._2.burpees
+                @defining(bestExercise3AnyDay()) { best3 =>
+                    Best @yearsExercises._3.displayName: @best3._2.username on @printableDate(best3._1) with @best3._2.reps3
                 }
             </li>
             <li>
-                @defining(bestMilesAnyDay()) { bestMiles =>
-                    Best miles: @bestMiles._2.username on @printableDate(bestMiles._1) with @bestMiles._2.miles
+                @defining(bestExercise4AnyDay()) { best4 =>
+                    Best @yearsExercises._4.displayName: @best4._2.username on @printableDate(best4._1) with @best4._2.reps4
                 }
             </li>
         </ul>

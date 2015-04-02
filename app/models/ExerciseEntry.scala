@@ -4,17 +4,19 @@ import java.sql.{Date => SqlDate}
 import java.util.Calendar
 
 import controllers.handlers.OneFiveOneDateUtils
+import utils.ChallengeYears
+import utils.ChallengeYears._
+import utils.Exercises.Exercise
 
 import scala.slick.driver.PostgresDriver.simple._
 import scala.slick.lifted.ProvenShape
 
-
-case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double, when: Calendar, userId: Int, comment: String) {
+case class ExerciseEntry(id: Int, exerciseType: Exercise, reps: Double, when: Calendar, userId: Int, comment: String) {
 
   def toRow: ExerciseEntries.RowType = (id, exerciseType.toString, reps, new SqlDate(when.getTimeInMillis), userId, comment)
 
   def this(row: ExerciseEntries.RowType) {
-    this(row._1, ExerciseType.withName(row._2), row._3, {
+    this(row._1, Exercise.withName(row._2), row._3, {
           val entryCal = Calendar.getInstance()
           entryCal.setTimeInMillis(row._4.getTime)
           //dates stored in the DB are at midnight in the local timezone (UTC on the deployed host)
@@ -27,11 +29,7 @@ case class ExerciseEntry(id: Int, exerciseType: ExerciseType.Value, reps: Double
   }
 }
 
-object ExerciseType extends Enumeration {
-  val SitUps, Lunges, Burpees, Miles, Shot = Value
-}
-
-class ExerciseEntries(tag: Tag) extends Table[ExerciseEntries.RowType](tag, "EXERCISE_ENTRIES") {
+class ExerciseEntries(tag: Tag, tableName: String = "EXERCISE_ENTRIES_2015") extends Table[ExerciseEntries.RowType](tag, tableName) {
   def id           = column[Int]("id", O.AutoInc, O.PrimaryKey)
   def exerciseType = column[String]("exercisetype")
   def reps         = column[Double]("reps")
@@ -45,25 +43,35 @@ class ExerciseEntries(tag: Tag) extends Table[ExerciseEntries.RowType](tag, "EXE
 }
 
 object ExerciseEntries {
+  import ChallengeYears.ChallengeYear
   type RowType = (Int, String, Double, SqlDate, Int, String)
 
-  val exerciseEntries = TableQuery[ExerciseEntries]
+
+  def exerciseEntries(year: ChallengeYear = ThisYear) =
+    TableQuery[ExerciseEntries]((tag: Tag) => new ExerciseEntries(tag, year.entriesTable))
 
   def add(exEntry: ExerciseEntry): Unit = {
     db.withSession { implicit session =>
-      exerciseEntries += exEntry.toRow
+      exerciseEntries() += exEntry.toRow
     }
   }
 
-  def getAllForUser(userId: Int): List[ExerciseEntry] = {
+  def getAllForUser(userId: Int, year: ChallengeYear = ThisYear): List[ExerciseEntry] = {
     db.withSession { implicit session =>
-      exerciseEntries.filter{_.userId === userId}.list.map{new ExerciseEntry(_)}
+      exerciseEntries(year).filter{_.userId === userId}.list.map{new ExerciseEntry(_)}
     }
   }
 
-  def getAll: List[ExerciseEntry] = {
+  def getAll(year: ChallengeYear = ThisYear): List[ExerciseEntry] = {
     db.withSession { implicit session =>
-      exerciseEntries.list.map{new ExerciseEntry(_)}
+      exerciseEntries(year).list.map{new ExerciseEntry(_)}
+    }
+  }
+
+  def get(id: Int, year: ChallengeYear = ThisYear): ExerciseEntry = {
+    db.withSession { implicit session =>
+      val rowData = exerciseEntries(year).filter(_.id === id).list.head
+      new ExerciseEntry(rowData)
     }
   }
 

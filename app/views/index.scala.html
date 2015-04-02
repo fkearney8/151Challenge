@@ -4,33 +4,32 @@
 @import controllers.handlers.EveryoneTotals
 @import controllers.handlers.OneFiveOneDateUtils
 @import controllers.handlers.OneFiveOneConstants
+@import utils.Exercises._
 
 @main("151 Challenge") {
   <h1> Welcome to the 151 Challenge </h1>
 
-  <p>The rules are as follows:</p>
   <p>
-    In any order, interleaving as you will, do:
-    <ul>
-      <li>3051 Situps</li>
-      <li>2051 Lunges</li>
-      <li>1051 Burpees with a pushup</li>
-      <li>151 Miles</li>
-    </ul>
+    Welcome to the 151 Challenge. If you're just getting started, check out the <a href="/rules">Rules Page</a> to get
+    an idea what you're in for. We start on on @OneFiveOneDateUtils.printableDate(OneFiveOneConstants.START_OF_CHALLENGE) at 12:00am.
   </p>
-  <p>
-    Then when all that is done, drink a shot of Bacardi 151 and take a picture to mark the occasion.
-    We have started on @OneFiveOneDateUtils.printableDate(OneFiveOneConstants.START_OF_CHALLENGE) at 12:00am.
-  </p>
+
   <h3>How are we doing?</h3>
   <p>
     @defining(EveryoneTotals.everyoneToday()) { everyoneToday =>
-      Today (PST) so far we have done @everyoneToday.sitUps sitUps, @everyoneToday.lunges lunges, @everyoneToday.burpees burpees and @everyoneToday.miles miles.
+      Today (PST) so far we have done
+      @everyoneToday.reps1 @yearsExercises._1.displayName,
+      @everyoneToday.reps2 @yearsExercises._2.displayName,
+      @everyoneToday.reps3 @yearsExercises._3.displayName
+      and @everyoneToday.reps4 @yearsExercises._4.displayName.
     }
     <br/>
     @defining(EveryoneTotals.everyoneBestDay()) { everyoneBestDay =>
-      Our best day was @OneFiveOneDateUtils.printableDate(everyoneBestDay._1) when we did @everyoneBestDay._2.sitUps situps,
-      @everyoneBestDay._2.lunges lunges, @everyoneBestDay._2.burpees burpees and @everyoneBestDay._2.miles miles.
+      Our best day was @OneFiveOneDateUtils.printableDate(everyoneBestDay._1) when we did
+      @everyoneBestDay._2.reps1 @yearsExercises._1.displayName,
+      @everyoneBestDay._2.reps2 @yearsExercises._2.displayName,
+      @everyoneBestDay._2.reps3 @yearsExercises._3.displayName
+      and @everyoneBestDay._2.reps4 @yearsExercises._1.displayName.
     }
     <div>
       Overall percentage completed by all of us, by day:<br/>
@@ -43,26 +42,6 @@
   <p>
     You can join the <a href="https://groupme.com/join_group/11720972/BwiYla">Group Me</a> chat for all the contestants
     to ask questions, stay up to date and talk trash. If you've already joined, you can <a href="https://app.groupme.com/chats">go there now.</a>
-  </p>
-  <p>
-    Conversion ratios:
-    You can get conversion ratios for things if you can't physically do them for some reason. We'll be kind in that regard. However
-    if you can do it, but want some conversion because you're doing a lot of something else, don't expect friendly responses.
-    Part of the challenge is suffering through whatever it is we're doing together.
-
-    Some ratios we've agreed to:
-    <ul>
-      <li>10 Biking Miles:1 Run/Walk Mile</li>
-      <li>Outdoor Soccer game:2 Run/Walk Mile</li>
-      <li>Ultimate Frisbee game:2 Run/Walk Mile</li>
-      <li>Any core exercise about as hard as a situp:1 situp</li>
-      <li>plank for 5 seconds:1 situp</li>
-    </ul>
-  </p>
-  <p>
-    The spirit of this is to incentivize more exercise. So if you have a pedometer, think about tracking only what
-    is really extra walking or running, and not your day-to-day walking in the office or home that everyone does but will not track
-    without a pedometer.
   </p>
 
   <script src="@routes.Assets.at("javascript/151Visualizations.js")"></script>
