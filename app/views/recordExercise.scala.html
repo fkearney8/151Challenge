@@ -2,6 +2,8 @@
 
 @import utils.authentication.UserAuthenticator
 @import controllers.handlers.OneFiveOneDateUtils
+@import controllers.handlers.AggregateDataHelper._
+@import controllers.handlers.PercentageCalculator._
 
 @main("Record Progress") {
     <script>
@@ -33,7 +35,7 @@
         <script>
         $(function() {
           var $dialog = $("#dialog")
-          $dialog.dialog(
+          $dialog.dialog (
           {
             dialogClass: "no-close",
             buttons: [
@@ -45,6 +47,9 @@
               }
              ]
           });
+          setTimeout(function() {
+            $dialog.dialog("close");
+          }, 1500);
         });
         </script>
     }
@@ -94,23 +99,44 @@
         <button type="submit">Record Exercise Done</button>
     }
 
-    <h2>Recent Entries</h2>
-    <table class="standard">
-      <tr>
-        <th>Exercise Type</th>
-        <th>Reps</th>
-        <th>When</th>
-        <th>Comment</th>
-      </tr>
-      @defining(ExerciseEntries.getAllForUser(UserAuthenticator.getAuthenticatedUser.get.id)) { userEntries =>
-        @userEntries.sortBy(_.when).reverse.take(10).map { eachEntry =>
+    @defining(ExerciseEntries.getAllForUser(UserAuthenticator.getAuthenticatedUser.get.id)) { userEntries =>
+
+        <h2>Current Progress</h2>
+        <table>
+            <tr>
+                <th>SitUps</th>
+                <th>Lunges</th>
+                <th>Burpees</th>
+                <th>Miles</th>
+                <th>Overall</th>
+            </tr>
+            <tr>
+                @defining(sumEntries(userEntries)) { summedUserEntries =>
+                <td style="padding: 5px;">@summedUserEntries.sitUps (@sitUpsPercentComplete(summedUserEntries.sitUps)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.lunges (@lungesPercentComplete(summedUserEntries.lunges)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.burpees (@burpeesPercentComplete(summedUserEntries.burpees)%)</td>
+                <td style="padding: 5px;">@summedUserEntries.miles (@milesPercentComplete(summedUserEntries.miles)%)</td>
+                <td style="padding: 5px;">@calculateOverallPercentComplete(sumEntries(userEntries))%</td>
+                }
+            </tr>
+        </table>
+
+        <h2>Recent Entries</h2>
+        <table class="standard">
           <tr>
-            <td>@eachEntry.exerciseType</td>
-            <td>@eachEntry.reps</td>
-            <td>@OneFiveOneDateUtils.printableDate(eachEntry.when)</td>
-            <td>@eachEntry.comment</td>
+            <th>Exercise Type</th>
+            <th>Reps</th>
+            <th>When</th>
+            <th>Comment</th>
           </tr>
-        }
-      }
-    </table>
+            @userEntries.sortBy(_.when).reverse.take(10).map { eachEntry =>
+              <tr>
+                <td>@eachEntry.exerciseType</td>
+                <td>@eachEntry.reps</td>
+                <td>@OneFiveOneDateUtils.printableDate(eachEntry.when)</td>
+                <td>@eachEntry.comment</td>
+              </tr>
+            }
+        </table>
+    }
 }
