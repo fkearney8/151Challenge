@@ -37,8 +37,12 @@ object OneFiveOneDateUtils {
     yesterday
   }
 
+  def getNowPt: Calendar = {
+    Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+  }
+
   def getToday: Calendar = {
-    val today = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"))
+    val today = getNowPt
     roundToDay(today)
 
     //create a 'today' in the default TZ, (which will be UTC on the production host, but this will work regardless of what it is)

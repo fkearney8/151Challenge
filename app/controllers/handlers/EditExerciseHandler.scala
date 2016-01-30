@@ -5,7 +5,7 @@ import play.api.mvc.{Result, AnyContent, Request, Results}
 import play.api.mvc.Results._
 import utils.authentication.UserAuthenticator
 
-object EditExerciseHandler {
+class EditExerciseHandler {
 
   def editExerciseEntry(implicit request: Request[AnyContent]): Result = {
     //look up the entry to make sure the logged-in user is the owner of the entry

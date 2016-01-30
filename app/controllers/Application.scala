@@ -49,11 +49,11 @@ object Application extends BaseController {
   }
 
   def editExerciseEntry() = isAuthenticated { username => implicit request =>
-    EditExerciseHandler.editExerciseEntry
+    new EditExerciseHandler().editExerciseEntry
   }
 
   def doEditExerciseEntry() = isAuthenticated { username => implicit request =>
-    EditExerciseHandler.commitExerciseEntryChanges
+    new EditExerciseHandler().commitExerciseEntryChanges
   }
 
   def visualizations() = Action { implicit request =>
