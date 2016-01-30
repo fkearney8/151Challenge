@@ -8,7 +8,6 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) {
     Logger.info("Application has started: Setting up database")
 
-    new DailyDigestBot().postReport
     new Scheduler().start()
   }
 
