@@ -3,6 +3,7 @@ package controllers.handlers
 import java.util.Calendar
 
 import controllers.handlers.OneFiveOneDateUtils._
+import utils.ChallengeYears
 
 
 object OneFiveOneConstants {
@@ -15,7 +16,7 @@ object OneFiveOneConstants {
 
   val START_OF_CHALLENGE = {
     val startOfChallenge = Calendar.getInstance()
-    startOfChallenge.set(Calendar.YEAR, 2016)
+    startOfChallenge.set(Calendar.YEAR, ChallengeYears.ThisYear.yearString.toInt)
     startOfChallenge.set(Calendar.MONTH, Calendar.JANUARY)
     startOfChallenge.set(Calendar.DAY_OF_MONTH, 15)
     roundToDay(startOfChallenge)

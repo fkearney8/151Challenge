@@ -41,7 +41,7 @@ object Exercises {
   case object PushUps extends Exercise("PushUps", "Push Ups")
   case object AirSquats extends Exercise("AirSquats", "Air Squats")
   case object Planks extends Exercise("Planks", "Planks")
-  
+
   case object MountainClimbers extends Exercise("MountainClimbers", "Mountain Climbers")
   case object TricepDips extends Exercise("TricepDips", "Tricep Dips")
   case object VeeUps extends Exercise("VeeUps", "V-Ups")
