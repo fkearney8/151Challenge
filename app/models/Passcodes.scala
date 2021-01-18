@@ -6,7 +6,7 @@ package models
 object Passcodes {
 
   def isValid(passcode: String) = {
-    passcode == "151Challenge"
+    passcode == "Kearney"
   }
 
 }

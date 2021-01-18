@@ -12,7 +12,7 @@ object Exercises {
       case Year2015 => (SitUps, Lunges, Burpees, Miles, Shot)
       case Year2016 => (AirSquats, PushUps, Planks, Miles, Shot)
       case Year2017 => (MountainClimbers, TricepDips, VeeUps, Miles, Shot)
-      case ThisYear => (MountainClimbers, TricepDips, VeeUps, Miles, Shot)
+      case ThisYear => (Core, LowerBody, UpperBody, Miles, Shot)
     }
   }
 
@@ -47,8 +47,8 @@ object Exercises {
   case object TricepDips extends Exercise("TricepDips", "Tricep Dips")
   case object VeeUps extends Exercise("VeeUps", "V-Ups")
 
-  case object UpperBody extends Exercise("UpperBody", "Upper Body")
   case object Core extends Exercise("Core", "Core")
   case object LowerBody extends Exercise("LowerBody", "Lower Body")
+  case object UpperBody extends Exercise("UpperBody", "Upper Body")
 }
 
