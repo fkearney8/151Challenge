@@ -17,10 +17,18 @@ refresh.
 We've got a GitHub issue open to track feature ideas:
 https://github.com/fkearney8/151Challenge/issues
 
-#Java Version
+# Java Version
+
 You'll need to have Java 1.7 to compile and run this, right now.
 I tried to upgrade at one point, and had some trouble with activator. Hasn't seemed
 important enough to tackle yet. Make sure Java 1.7 is your JAVA_HOME and first on the PATH.
+
+# Resetting User Passwords
+
+We don't have a fancy email password recovery mechanism. But manually, you can:
+1. ./activator console
+1. val secret = <secret from application.conf, now "^WH]k_YiPmgrq8@_6lM1=5p=8sFQ>k6@c0XXK0MExJvgPj3mYNUylerB`wApyXc8">
+1. play.api.libs.Crypto.sign("password", secret.getBytes("utf-8"))
 
 # Database
 
