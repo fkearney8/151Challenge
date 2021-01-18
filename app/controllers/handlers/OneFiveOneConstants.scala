@@ -18,7 +18,7 @@ object OneFiveOneConstants {
     val startOfChallenge = Calendar.getInstance()
     startOfChallenge.set(Calendar.YEAR, ChallengeYears.ThisYear.yearString.toInt)
     startOfChallenge.set(Calendar.MONTH, Calendar.JANUARY)
-    startOfChallenge.set(Calendar.DAY_OF_MONTH, 15)
+    startOfChallenge.set(Calendar.DAY_OF_MONTH, 18)
     roundToDay(startOfChallenge)
     startOfChallenge
   }

@@ -11,6 +11,7 @@ object Exercises {
     year match {
       case Year2015 => (SitUps, Lunges, Burpees, Miles, Shot)
       case Year2016 => (AirSquats, PushUps, Planks, Miles, Shot)
+      case Year2017 => (MountainClimbers, TricepDips, VeeUps, Miles, Shot)
       case ThisYear => (MountainClimbers, TricepDips, VeeUps, Miles, Shot)
     }
   }
@@ -18,7 +19,7 @@ object Exercises {
   def exercisesForYearList(year: ChallengeYear = ThisYear): List[Exercise] =
       List(exercisesForYear(year)._1, exercisesForYear(year)._2, exercisesForYear(year)._3, exercisesForYear(year)._4, exercisesForYear(year)._5)
 
-  private val allExercises: Seq[Exercise] = List(SitUps, Lunges, Burpees, Miles, Shot, PushUps, AirSquats, Planks, MountainClimbers, TricepDips, VeeUps)
+  private val allExercises: Seq[Exercise] = List(SitUps, Lunges, Burpees, Miles, Shot, PushUps, AirSquats, Planks, MountainClimbers, TricepDips, VeeUps, UpperBody, Core, LowerBody)
 
 
   sealed abstract class Exercise(val name: String, val displayName: String)
@@ -45,5 +46,9 @@ object Exercises {
   case object MountainClimbers extends Exercise("MountainClimbers", "Mountain Climbers")
   case object TricepDips extends Exercise("TricepDips", "Tricep Dips")
   case object VeeUps extends Exercise("VeeUps", "V-Ups")
+
+  case object UpperBody extends Exercise("UpperBody", "Upper Body")
+  case object Core extends Exercise("Core", "Core")
+  case object LowerBody extends Exercise("LowerBody", "Lower Body")
 }
 

@@ -4,12 +4,10 @@ import java.util.Calendar
 
 import controllers.Application._
 import forms.{ExerciseEntriesForm, ExerciseEntryFormInput}
-import models.{ExerciseEntries, ExerciseEntry, Users}
-import play.api.Logger
+import models.{ExerciseEntries, ExerciseEntry}
 import play.api.data.{Form, FormError}
 import play.api.mvc.{AnyContent, Request, Result}
 import utils.authentication.UserAuthenticator
-import utils.groupme.GroupMePoster
 
 object AddExerciseHandler {
 
@@ -24,7 +22,7 @@ object AddExerciseHandler {
       }
     } else {
       val formData = formInfo.get
-      UserAuthenticator.getAuthenticatedUser(request).fold(BadRequest("No authenticated user when adding exercise")){
+      UserAuthenticator.getAuthenticatedUser(request).fold(BadRequest("No authenticated user when adding exercise")) {
         authUser => {
           //ID is 0 here because it does not have an affect on insertion
           //TODO try an implicit conversion for all these?
