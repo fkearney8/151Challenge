@@ -17,6 +17,11 @@ refresh.
 We've got a GitHub issue open to track feature ideas:
 https://github.com/fkearney8/151Challenge/issues
 
+#Java Version
+You'll need to have Java 1.7 to compile and run this, right now.
+I tried to upgrade at one point, and had some trouble with activator. Hasn't seemed
+important enough to tackle yet. Make sure Java 1.7 is your JAVA_HOME and first on the PATH.
+
 # Database
 
 The website uses a postgres database by default.  You will need to install and
